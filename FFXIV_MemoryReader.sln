@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2024
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFXIV_MemoryReader", "FFXIV_MemoryReader\FFXIV_MemoryReader.csproj", "{96F56465-381B-46CD-AFC5-AD7FAEC8D926}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{96F56465-381B-46CD-AFC5-AD7FAEC8D926}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96F56465-381B-46CD-AFC5-AD7FAEC8D926}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96F56465-381B-46CD-AFC5-AD7FAEC8D926}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96F56465-381B-46CD-AFC5-AD7FAEC8D926}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {450453E0-BE62-4C87-9A60-DEAD294B29A1}
+	EndGlobalSection
+EndGlobal
