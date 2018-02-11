@@ -11,16 +11,23 @@ namespace TamanegiMage.FFXIV_MemoryReader
 {
     public class MemoryPlugin : IActPluginV1
     {
-        PluginCore core;
+        public PluginCore Core;
         public void DeInitPlugin()
         {
-            
+            if (Core != null)
+            {
+                Core.Dispose();
+            }
         }
 
         public void InitPlugin(TabPage pluginScreenSpace, Label pluginStatusText)
         {
-            core = new PluginCore();
-            core.Init(pluginScreenSpace, pluginStatusText);
+            Core = new PluginCore();
+            Core.Init(pluginScreenSpace, pluginStatusText);
         }
+
+        public List<Model.Combatant> GetCombatants() => Core.GetConbatants();
+
+        
     }
 }

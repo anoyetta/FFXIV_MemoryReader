@@ -12,7 +12,7 @@ using NLog.Targets;
 
 namespace TamanegiMage.FFXIV_MemoryReader.Core
 {
-    class PluginCore : IDisposable
+    public class PluginCore : IDisposable
     {
         internal static NLog.Logger Logger;
 
@@ -20,24 +20,31 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         Label label;
         ElementHost elementHost;
         Memory memory;
-        System.Timers.Timer proessChecker;
+        System.Timers.Timer processChecker;
         private object _lock = new object();
 
-        public PluginCore()
+        internal PluginCore()
         {
             InitizalizeLogger();
 
             Logger.Trace("PluginCore Start.");
-            proessChecker = new System.Timers.Timer();
-            proessChecker.Elapsed += ProessChecker_Elapsed;
-            proessChecker.Interval = 1000;
+            processChecker = new System.Timers.Timer();
+            processChecker.Elapsed += ProessChecker_Elapsed;
+            processChecker.Interval = 200;
 
             Logger.Trace("PluginCore End.");
         }
 
         public void Dispose()
         {
-            proessChecker.Stop();
+            Logger.Trace("PluginCore Dispose Called.");
+
+            processChecker.Stop();
+            processChecker.Dispose();
+
+            memory?.Dispose();
+
+            Logger.Trace("PluginCore Dispose Finished.");
         }
 
         private void InitizalizeLogger()
@@ -58,7 +65,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             Logger = NLog.LogManager.GetLogger("Logger");
         }
 
-        public void Init(TabPage pluginScreenSpace, Label pluginStatusText)
+        internal void Init(TabPage pluginScreenSpace, Label pluginStatusText)
         {
             Logger.Trace("PluginCore->Init Start.");
 
@@ -70,7 +77,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             tabPage.Controls.Add(elementHost = new ElementHost() { Child = new MainControl(), Dock = DockStyle.Fill });
 
             Logger.Trace("Start ProcessChecker Timer");
-            proessChecker.Start();
+            processChecker.Start();
 
             Logger.Trace("PluginCore->Init End.");
         }
@@ -79,7 +86,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             CheckProcessId();
         }
 
-        public void CheckProcessId()
+        internal void CheckProcessId()
         {
             if (memory == null)
             {
@@ -93,7 +100,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             }
         }
 
-        public void ChangeProcessId(int processId = 0)
+        internal void ChangeProcessId(int processId = 0)
         {
             lock (_lock)
             {
@@ -122,7 +129,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         }
 
 
-        public List<Model.Combatant> GetConbatants()
+        internal List<Model.Combatant> GetConbatants()
         {
             List<Model.Combatant> result = new List<Model.Combatant>();
             try

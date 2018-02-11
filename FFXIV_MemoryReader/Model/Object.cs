@@ -81,7 +81,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
         public Single PosX;
         public Single PosY;
         public Single PosZ;
-        public int Heading { get; set; }
+        public Single Heading;
         public byte EffectiveDistance;
         public string Distance;
         public string HorizontalDistance;
