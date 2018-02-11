@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace TamanegiMage.FFXIV_MemoryReader.Core
 {
-    
-    class Signature
+    internal class Pointer
     {
-        internal string Pattern { get; set; }
-        internal long[] PointerPath { get; set; }
-        internal Architecture Architecture { get; set; }
-
+        public string Signature { get; set; }
+        public IntPtr Address { get; set; } = IntPtr.Zero;
+        public long[] PointerPath { get; set; }
+        public Architecture Architecture { get; set; }
     }
 
     enum Architecture
@@ -21,5 +20,6 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         x64_RIP_relative = 1,
         x86 = 2,
     }
+
 
 }

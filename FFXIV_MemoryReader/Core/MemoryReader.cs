@@ -3,149 +3,137 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
+using TamanegiMage.FFXIV_MemoryReader.Model;
 
 namespace TamanegiMage.FFXIV_MemoryReader.Core
 {
-    class MemoryReader : IDisposable
+    partial class Memory
     {
-        private Process _process;
-        private IntPtr mobArrayAddress = IntPtr.Zero;
+        private const int combatantDataSize = 16192; //0x3F40
 
-        Signature MobArray = new Signature()
+        internal unsafe List<Model.Combatant> GetCombatants()
         {
-            Pattern = "488b420848c1e8033da701000077248bc0488d0d",
-            PointerPath = new long[] { 0L },
-            Architecture = Architecture.x64_RIP_relative,
+            int num = 344;
+            List<Combatant> result = new List<Combatant>();
+            
+            int sz = 8;
+            byte[] source = GetByteArray(Pointers[PointerType.MobArray].Address, sz * num);
+            if (source == null || source.Length == 0) { return result; }
 
-        };
-
-
-        public MemoryReader(Process process)
-        {
-            _process = process;
-
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool GetPointerAddress()
-        {
-            return true;
-        }
-
-
-        private List<IntPtr> SigScan(Signature signature)
-        {
-
-            if (signature.Pattern == null || signature.Pattern.Length % 2 != 0)
+            for (int i = 0; i < num; i++)
             {
-                return new List<IntPtr>();
-            }
+                IntPtr p;
+                fixed (byte* bp = source) p = new IntPtr(*(Int64*)&bp[i * sz]);
 
-            // 1byte = 2char
-            byte?[] patternByteArray = new byte?[signature.Pattern.Length / 2];
-
-            // Convert Pattern to Array of Byte
-            for (int i = 0; i < signature.Pattern.Length / 2; i++)
-            {
-                string text = signature.Pattern.Substring(i * 2, 2);
-                if (text == "??")
+                if (!(p == IntPtr.Zero))
                 {
-                    patternByteArray[i] = null;
+                    byte[] c = GetByteArray(p, combatantDataSize);
+                    Combatant combatant = GetCombatantFromByteArray(c);
+                    if (combatant.type != ObjectType.PC && combatant.type != ObjectType.Monster)
+                    {
+                        continue;
+                    }
+                    if (combatant.ID != 0 && combatant.ID != 3758096384u && !result.Exists((Combatant x) => x.ID == combatant.ID))
+                    {
+                        combatant.Order = i;
+                        result.Add(combatant);
+                    }
+                }
+            }
+            
+            return result;
+        }
+
+        public unsafe Combatant GetCombatantFromByteArray(byte[] source)
+        {
+            int offset = 0;
+            Combatant combatant = new Combatant();
+            fixed (byte* p = source)
+            {
+                //combatant.BoA = BitConverter.ToString(source);
+
+                combatant.Name = GetStringFromBytes(source, 48);
+                combatant.ID = *(uint*)&p[116];
+                combatant.OwnerID = *(uint*)&p[132];
+                if (combatant.OwnerID == 3758096384u)
+                {
+                    combatant.OwnerID = 0u;
+                }
+                combatant.type = (ObjectType)p[140];
+                combatant.EffectiveDistance = p[146];
+
+                offset = 160;
+                combatant.PosX = *(Single*)&p[offset];
+                combatant.PosZ = *(Single*)&p[offset + 4];
+                combatant.PosY = *(Single*)&p[offset + 8];
+                combatant.Heading  = *(int*)&p[offset + 16];
+
+                combatant.TargetID = *(uint*)&p[5680];
+
+                offset = 5808;
+                if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
+                {
+                    combatant.CurrentHP = *(int*)&p[offset + 8];
+                    combatant.MaxHP = *(int*)&p[offset + 12];
+                    combatant.CurrentMP = *(int*)&p[offset + 16];
+                    combatant.MaxMP = *(int*)&p[offset + 20];
+                    combatant.CurrentTP = *(short*)&p[offset + 24];
+                    combatant.MaxTP = 1000;
+                    combatant.Job = p[offset + 62];
+                    combatant.Level = p[offset + 64];
+
+                    // Status aka Buff,Debuff
+                    combatant.Statuses = new List<Status>();
+                    const int StatusEffectOffset = 5992;
+                    const int statusSize = 12;
+
+                    int statusCountLimit = 60;
+                    if (combatant.type == ObjectType.PC) statusCountLimit = 30;
+
+                    var statusesSource = new byte[statusCountLimit * statusSize];
+                    Buffer.BlockCopy(source, StatusEffectOffset, statusesSource, 0, statusCountLimit * statusSize);
+                    for (var i = 0; i < statusCountLimit; i++)
+                    {
+                        var statusBytes = new byte[statusSize];
+                        Buffer.BlockCopy(statusesSource, i * statusSize, statusBytes, 0, statusSize);
+                        var status = new Status
+                        {
+                            StatusID = BitConverter.ToInt16(statusBytes, 0),
+                            Stacks = statusBytes[2],
+                            Duration = BitConverter.ToSingle(statusBytes, 4),
+                            CasterID = BitConverter.ToUInt32(statusBytes, 8),
+                            IsOwner = false,
+                        };
+
+                        if (status.IsValid())
+                        {
+                            combatant.Statuses.Add(status);
+                        }
+                    }
+
+                    // Cast
+                    combatant.Casting = new Cast
+                    {
+                        ID = *(short*)&p[6372],
+                        TargetID = *(uint*)&p[6384],
+                        Progress = *(Single*)&p[6420],
+                        Time = *(Single*)&p[6424],
+                    };
                 }
                 else
                 {
-                    patternByteArray[i] = new byte?(Convert.ToByte(text, 16));
+                    combatant.CurrentHP =
+                    combatant.MaxHP =
+                    combatant.CurrentMP =
+                    combatant.MaxMP =
+                    combatant.MaxTP =
+                    combatant.CurrentTP = 0;
+                    combatant.Statuses = new List<Status>();
+                    combatant.Casting = new Cast();
                 }
             }
-
-            int moduleMemorySize = _process.MainModule.ModuleMemorySize;
-            IntPtr baseAddress = _process.MainModule.BaseAddress;
-            IntPtr intPtr_EndOfModuleMemory = IntPtr.Add(baseAddress, moduleMemorySize);
-            IntPtr intPtr_Scannning = baseAddress;
-
-            int splitSizeOfMemory = 65536;
-            byte[] splitMemoryArray = new byte[splitSizeOfMemory];
-
-            List<IntPtr> list = new List<IntPtr>();
-
-            // スキャン開始位置が最後まで行ったら検索
-            while (intPtr_Scannning.ToInt64() < intPtr_EndOfModuleMemory.ToInt64())
-            {
-                IntPtr nSize = new IntPtr(splitSizeOfMemory);
-
-                // (最後のsplitで) 残ったメモリがsplitSizeより小さかった場合は、残りのサイズにする
-                if (IntPtr.Add(intPtr_Scannning, splitSizeOfMemory).ToInt64() > intPtr_EndOfModuleMemory.ToInt64())
-                {
-                    nSize = (IntPtr)(intPtr_EndOfModuleMemory.ToInt64() - intPtr_Scannning.ToInt64());
-                }
-
-                IntPtr intPtr_NumberOfBytesRead = IntPtr.Zero;
-                if (NativeMethods.ReadProcessMemory(_process.Handle, intPtr_Scannning, splitMemoryArray, nSize, ref intPtr_NumberOfBytesRead))
-                {
-                    int num2 = 0;
-                    // 切り出したメモリ内を1バイトずつずらしてPatternと合っているか確認していく
-                    while ((long)num2 < intPtr_NumberOfBytesRead.ToInt64() - (long)patternByteArray.Length - 4L + 1L)
-                    {
-                        int matchCount = 0;
-                        for (int j = 0; j < patternByteArray.Length; j++)
-                        {
-                            // ??だった部分はマッチしたとしてスルー
-                            if (!patternByteArray[j].HasValue)
-                            {
-                                matchCount++;
-                            }
-                            else
-                            {
-                                if (patternByteArray[j].Value != splitMemoryArray[num2 + j])
-                                {
-                                    break;
-                                }
-                                matchCount++;
-                            }
-                        }
-
-                        // 最後まで行ったら見つかったと言うこと
-                        if (matchCount == patternByteArray.Length)
-                        {
-                            IntPtr item = IntPtr.Zero;
-
-                            switch (signature.Architecture)
-                            {
-                                case Architecture.x64:
-                                    item = new IntPtr(BitConverter.ToInt64(splitMemoryArray, num2 + patternByteArray.Length));
-                                    item = new IntPtr(item.ToInt64());
-                                    break;
-                                case Architecture.x64_RIP_relative:
-                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num2 + patternByteArray.Length));
-                                    item = new IntPtr(item.ToInt64() + intPtr_Scannning.ToInt64() + (long)num2 + (long)patternByteArray.Length + 4L);
-                                    break;
-                                case Architecture.x86:
-                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num2 + patternByteArray.Length));
-                                    item = new IntPtr(item.ToInt64());
-                                    break;
-                            }
-
-                            // ToDo: 重複排除して追加する！
-                            if (item != IntPtr.Zero && !list.Contains(item))
-                            {
-                                list.Add(item);
-                            }
-                        }
-                        num2++;
-                    }
-                }
-                intPtr_Scannning = IntPtr.Add(intPtr_Scannning, splitSizeOfMemory - patternByteArray.Length);
-            }
-
-
-            // この時点で list には Pattern の直後のアドレスが入っってる
-            return list;
-
+            return combatant;
         }
+
     }
 }

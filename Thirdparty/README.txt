@@ -1,1 +1,1 @@
-Place "Advanced Combat Tracker.exe" here.
+Place "Advanced Combat Tracker.exe" and "libz.exe" here.
