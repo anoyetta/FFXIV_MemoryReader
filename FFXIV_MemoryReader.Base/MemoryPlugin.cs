@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using Advanced_Combat_Tracker;
 using TamanegiMage.FFXIV_MemoryReader.Core;
 
-namespace TamanegiMage.FFXIV_MemoryReader
+namespace TamanegiMage.FFXIV_MemoryReader.Base
 {
     public class MemoryPlugin : IActPluginV1
     {

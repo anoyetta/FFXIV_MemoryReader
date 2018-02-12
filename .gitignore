@@ -11,6 +11,8 @@
 *.userprefs
 Thirdparty/Advanced Combat Tracker.exe
 Thirdparty/libz.exe
+Distributions/*.dll
+Distributions/*/*.dll
 
 # Build results
 [Dd]ebug/
