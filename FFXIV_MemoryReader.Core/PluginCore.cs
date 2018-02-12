@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Forms.Integration;
-using System.Diagnostics;
-using NLog;
+﻿using NLog;
 using NLog.Config;
 using NLog.Targets;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
+using System.Windows.Forms;
+using System.Windows.Forms.Integration;
 
 namespace TamanegiMage.FFXIV_MemoryReader.Core
 {
@@ -129,14 +127,14 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         }
 
 
-        public List<Model.Combatant> GetConbatants()
+        public List<Model.CombatantV1> GetConbatantsV1()
         {
-            List<Model.Combatant> result = new List<Model.Combatant>();
+            List<Model.CombatantV1> result = new List<Model.CombatantV1>();
             try
             {
                 if(memory != null && memory.IsValid)
                 {
-                    result = memory.GetCombatants();
+                    result = memory.GetCombatantsV1();
                 }
             }
             catch

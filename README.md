@@ -60,13 +60,19 @@ Distributions/
 
 サンプルのプロジェクト `FFXIV_MemoryReader_SampleClient` を参考にして下さい。
 
-具体的には、まず、
+具体的には、まずSDKのDLLを参照に追加します。
 
 - `FFXIV_MemoryReader.Base.dll` を参照に追加
-- `FFXIV_MemoryReader.Core.dll` を参照に追加
+- `FFXIV_MemoryReader.Model.dll` を参照に追加
 
-あとは、コードを書くだけです。
+また、usingにも追加します。
 
+```C#
+using TamanegiMage.FFXIV_MemoryReader.Base;
+using TamanegiMage.FFXIV_MemoryReader.Model;
+```
+
+あとはコードを書くだけです。  
 以下は周辺のキャラクター情報を取得する例です。
 
 ```C#
@@ -83,7 +89,7 @@ Distributions/
     if (plugin != null)
     {
         var memoryPlugin = plugin as MemoryPlugin;
-        List<Combatant> combatants = memoryPlugin.GetCombatants();
+        List<CombatantV1> combatants = memoryPlugin.GetCombatantsV1();
         if (combatants != null)
         {
             // 任意の処理
@@ -111,17 +117,17 @@ Distributions/
 3. libz.exe 等を使って1つの DLL にまとめる
 
 
-`1` が最も簡単ですが、多数のプラグインがある場合、このフォルダは壊滅的な状態になるでしょう。  
+**1** が最も簡単ですが、多数のプラグインがある場合、このフォルダは壊滅的な状態になるでしょう。  
 また、他のプラグインを導入した際に、誤って必要なファイルが書き換えられる可能性があります。
 
-`2` は他の多くの FFXIV 用 ACT プラグインで採用されている方式です。  
+**2** は他の多くの FFXIV 用 ACT プラグインで採用されている方式です。  
 プラグインがロードされる際に、必要な DLL を独自に読み込む機能を付けます。  
-参考: [anoyetta/ACT.SpecialSpellTimer](https://github.com/anoyetta/ACT.SpecialSpellTimer/blob/master/ACT.SpecialSpellTimer/AssemblyResolver.cs)
-/ 
-[hibiyasleep/OverlayPlugin](https://github.com/hibiyasleep/OverlayPlugin/blob/master/OverlayPlugin/AssemblyResolver.cs)
+参考: [anoyetta/ACT.SpecialSpellTimer の例](https://github.com/anoyetta/ACT.SpecialSpellTimer/blob/master/ACT.SpecialSpellTimer/AssemblyResolver.cs)
+, 
+[hibiyasleep/OverlayPlugin の例](https://github.com/hibiyasleep/OverlayPlugin/blob/master/OverlayPlugin/AssemblyResolver.cs)
 
 
-`3` は本プロジェクトで採用している方式です。必要な DLL を `libz` を使って1つにまとめてしまうことで解決しています。  
+**3** は本プロジェクトで採用している方式です。必要な DLL を `libz` を使って1つにまとめてしまうことで解決しています。  
 どのように実施しているかは、Visual Studio で サンプルプロジェクトのプロパティを開き、  
 「ビルドイベント」->「ビルド後イベントのコマンドライン」を参考にして下さい。
 

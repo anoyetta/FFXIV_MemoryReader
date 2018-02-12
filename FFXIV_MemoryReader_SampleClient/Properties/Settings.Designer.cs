@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TamanegiMage.FFXIV_MemoryReader_SampleClient.Properties {
+namespace FFXIV_MemoryReader_SampleClient.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
