@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TamanegiMage.FFXIV_MemoryReader.Model;
 
 namespace TamanegiMage.FFXIV_MemoryReader.Core
@@ -11,10 +8,10 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
     {
         private const int combatantDataSize = 16192; //0x3F40
 
-        internal unsafe List<Model.Combatant> GetCombatants()
+        internal unsafe List<Model.CombatantV1> GetCombatantsV1()
         {
             int num = 344;
-            List<Combatant> result = new List<Combatant>();
+            List<CombatantV1> result = new List<CombatantV1>();
             
             int sz = 8;
             byte[] source = GetByteArray(Pointers[PointerType.MobArray].Address, sz * num);
@@ -28,12 +25,12 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 if (!(p == IntPtr.Zero))
                 {
                     byte[] c = GetByteArray(p, combatantDataSize);
-                    Combatant combatant = GetCombatantFromByteArray(c);
+                    CombatantV1 combatant = GetCombatantFromByteArray(c);
                     if (combatant.type != ObjectType.PC && combatant.type != ObjectType.Monster)
                     {
                         continue;
                     }
-                    if (combatant.ID != 0 && combatant.ID != 3758096384u && !result.Exists((Combatant x) => x.ID == combatant.ID))
+                    if (combatant.ID != 0 && combatant.ID != 3758096384u && !result.Exists((CombatantV1 x) => x.ID == combatant.ID))
                     {
                         combatant.Order = i;
                         result.Add(combatant);
@@ -44,14 +41,12 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             return result;
         }
 
-        public unsafe Combatant GetCombatantFromByteArray(byte[] source)
+        public unsafe CombatantV1 GetCombatantFromByteArray(byte[] source)
         {
             int offset = 0;
-            Combatant combatant = new Combatant();
+            CombatantV1 combatant = new CombatantV1();
             fixed (byte* p = source)
             {
-                //combatant.BoA = BitConverter.ToString(source);
-
                 combatant.Name = GetStringFromBytes(source, 48);
                 combatant.ID = *(uint*)&p[116];
                 combatant.OwnerID = *(uint*)&p[132];
@@ -83,7 +78,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     combatant.Level = p[offset + 64];
 
                     // Status aka Buff,Debuff
-                    combatant.Statuses = new List<Status>();
+                    combatant.Statuses = new List<StatusV1>();
                     const int StatusEffectOffset = 5992;
                     const int statusSize = 12;
 
@@ -96,7 +91,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     {
                         var statusBytes = new byte[statusSize];
                         Buffer.BlockCopy(statusesSource, i * statusSize, statusBytes, 0, statusSize);
-                        var status = new Status
+                        var status = new StatusV1
                         {
                             StatusID = BitConverter.ToInt16(statusBytes, 0),
                             Stacks = statusBytes[2],
@@ -112,7 +107,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     }
 
                     // Cast
-                    combatant.Casting = new Cast
+                    combatant.Casting = new CastV1
                     {
                         ID = *(short*)&p[6372],
                         TargetID = *(uint*)&p[6384],
@@ -128,8 +123,8 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     combatant.MaxMP =
                     combatant.MaxTP =
                     combatant.CurrentTP = 0;
-                    combatant.Statuses = new List<Status>();
-                    combatant.Casting = new Cast();
+                    combatant.Statuses = new List<StatusV1>();
+                    combatant.Casting = new CastV1();
                 }
             }
             return combatant;

@@ -1,10 +1,6 @@
-﻿using System;
+﻿using Advanced_Combat_Tracker;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Advanced_Combat_Tracker;
 using TamanegiMage.FFXIV_MemoryReader.Core;
 
 namespace TamanegiMage.FFXIV_MemoryReader.Base
@@ -26,7 +22,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Base
             Core.Init(pluginScreenSpace, pluginStatusText);
         }
 
-        public List<Model.Combatant> GetCombatants() => Core.GetConbatants();
+        public List<Model.CombatantV1> GetCombatantsV1() => Core.GetConbatantsV1();
 
         
     }

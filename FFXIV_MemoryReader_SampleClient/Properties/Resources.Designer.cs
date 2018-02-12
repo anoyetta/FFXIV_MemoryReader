@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TamanegiMage.FFXIV_MemoryReader_SampleClient.Properties {
+namespace FFXIV_MemoryReader_SampleClient.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace TamanegiMage.FFXIV_MemoryReader_SampleClient.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TamanegiMage.FFXIV_MemoryReader_SampleClient.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FFXIV_MemoryReader_SampleClient.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

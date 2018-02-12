@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{98B82F75-2D87-409B-BC6E-EA734F954A67}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>TamanegiMage.FFXIV_MemoryReader_SampleClient</RootNamespace>
+    <RootNamespace>FFXIV_MemoryReader_SampleClient</RootNamespace>
     <AssemblyName>FFXIV_MemoryReader_SampleClient</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

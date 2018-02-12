@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TamanegiMage.FFXIV_MemoryReader.Model
 {
@@ -56,7 +53,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
         RDM  // 35
     }
 
-    public class Combatant
+    public class CombatantV1
     {
         public uint ID;
         public uint OwnerID;
@@ -75,8 +72,8 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
         public short MaxTP;
         public short CurrentTP;
 
-        public List<Status> Statuses;
-        public Cast Casting;
+        public List<StatusV1> Statuses;
+        public CastV1 Casting;
 
         public Single PosX;
         public Single PosY;
@@ -87,7 +84,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
         public string HorizontalDistance;
 
 
-        public float GetDistanceTo(Combatant target)
+        public float GetDistanceTo(CombatantV1 target)
         {
             var distanceX = (float)Math.Abs(PosX - target.PosX);
             var distanceY = (float)Math.Abs(PosY - target.PosY);
@@ -95,7 +92,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
             return (float)Math.Sqrt((distanceX * distanceX) + (distanceY * distanceY) + (distanceZ * distanceZ));
         }
 
-        public float GetHorizontalDistanceTo(Combatant target)
+        public float GetHorizontalDistanceTo(CombatantV1 target)
         {
             var distanceX = (float)Math.Abs(PosX - target.PosX);
             var distanceY = (float)Math.Abs(PosY - target.PosY);
@@ -104,7 +101,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
 
     }
 
-    public class Status
+    public class StatusV1
     {
         //public Combatant SourceCombatant;
         public short StatusID;
@@ -118,7 +115,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
             return StatusID > 0 && Duration <= 86400 && CasterID > 0;
         }
     }
-    public class Cast
+    public class CastV1
     {
         public short ID;
         public uint TargetID;

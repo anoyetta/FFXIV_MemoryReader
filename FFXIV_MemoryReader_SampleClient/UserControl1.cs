@@ -1,17 +1,11 @@
-﻿using System;
+﻿using Advanced_Combat_Tracker;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Advanced_Combat_Tracker;
 using TamanegiMage.FFXIV_MemoryReader.Base;
 using TamanegiMage.FFXIV_MemoryReader.Model;
 
-namespace TamanegiMage.FFXIV_MemoryReader_SampleClient
+namespace FFXIV_MemoryReader_SampleClient
 {
     public partial class UserControl1 : UserControl, IActPluginV1
     {
@@ -52,7 +46,7 @@ namespace TamanegiMage.FFXIV_MemoryReader_SampleClient
             if (plugin != null)
             {
                 var memoryPlugin = plugin as MemoryPlugin;
-                List<Combatant> combatants = memoryPlugin.GetCombatants();
+                List<CombatantV1> combatants = memoryPlugin.GetCombatantsV1();
                 if (combatants != null)
                 {
                     foreach (var combatant in combatants)

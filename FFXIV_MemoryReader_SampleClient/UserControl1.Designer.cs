@@ -1,4 +1,4 @@
-﻿namespace TamanegiMage.FFXIV_MemoryReader_SampleClient
+﻿namespace FFXIV_MemoryReader_SampleClient
 {
     partial class UserControl1
     {
