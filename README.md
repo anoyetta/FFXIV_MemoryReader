@@ -89,7 +89,7 @@ using TamanegiMage.FFXIV_MemoryReader.Model;
     if (plugin != null)
     {
         var memoryPlugin = plugin as MemoryPlugin;
-        List<Combatant> combatants = memoryPlugin.GetCombatants();
+        List<CombatantV1> combatants = memoryPlugin.GetCombatantsV1();
         if (combatants != null)
         {
             // 任意の処理
