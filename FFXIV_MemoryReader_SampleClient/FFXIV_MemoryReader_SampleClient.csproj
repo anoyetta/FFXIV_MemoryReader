@@ -39,6 +39,14 @@
       <HintPath>..\Thirdparty\Advanced Combat Tracker.exe</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="FFXIV_MemoryReader.Base, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Distributions\SDK\FFXIV_MemoryReader.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="FFXIV_MemoryReader.Model, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Distributions\SDK\FFXIV_MemoryReader.Model.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -82,14 +90,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FFXIV_MemoryReader\FFXIV_MemoryReader.csproj">
-      <Project>{96f56465-381b-46cd-afc5-ad7faec8d926}</Project>
-      <Name>FFXIV_MemoryReader</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)Thirdparty\libz.exe inject-dll --assembly FFXIV_MemoryReader_SampleClient.dll -include FFXIV_MemoryReader.dll --move</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)Thirdparty\libz.exe inject-dll --assembly FFXIV_MemoryReader_SampleClient.dll -include FFXIV_MemoryReader.Base.dll -include FFXIV_MemoryReader.Model.dll --move</PostBuildEvent>
   </PropertyGroup>
 </Project>

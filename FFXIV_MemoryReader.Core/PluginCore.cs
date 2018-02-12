@@ -23,7 +23,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         System.Timers.Timer processChecker;
         private object _lock = new object();
 
-        internal PluginCore()
+        public PluginCore()
         {
             InitizalizeLogger();
 
@@ -65,7 +65,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             Logger = NLog.LogManager.GetLogger("Logger");
         }
 
-        internal void Init(TabPage pluginScreenSpace, Label pluginStatusText)
+        public void Init(TabPage pluginScreenSpace, Label pluginStatusText)
         {
             Logger.Trace("PluginCore->Init Start.");
 
@@ -129,7 +129,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         }
 
 
-        internal List<Model.Combatant> GetConbatants()
+        public List<Model.Combatant> GetConbatants()
         {
             List<Model.Combatant> result = new List<Model.Combatant>();
             try

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Advanced_Combat_Tracker;
-using TamanegiMage.FFXIV_MemoryReader;
+using TamanegiMage.FFXIV_MemoryReader.Base;
 using TamanegiMage.FFXIV_MemoryReader.Model;
 
 namespace TamanegiMage.FFXIV_MemoryReader_SampleClient
