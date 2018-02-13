@@ -139,7 +139,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             // 1byte = 2char
             byte?[] patternByteArray = new byte?[pattern.Length / 2];
 
-            // Convert Pattern to Array of Byte
+            // Convert Pattern to "Array of Byte"
             for (int i = 0; i < pattern.Length / 2; i++)
             {
                 string text = pattern.Substring(i * 2, 2);
@@ -163,35 +163,38 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
             List<IntPtr> list = new List<IntPtr>();
 
-            // スキャン開始位置が最後まで行ったら検索
+            // while loop for scan all memory
             while (intPtr_Scannning.ToInt64() < intPtr_EndOfModuleMemory.ToInt64())
             {
                 IntPtr nSize = new IntPtr(splitSizeOfMemory);
 
-                // (最後のsplitで) 残ったメモリがsplitSizeより小さかった場合は、残りのサイズにする
+                // if remaining memory size is less than splitSize, change nSize to remaining size
                 if (IntPtr.Add(intPtr_Scannning, splitSizeOfMemory).ToInt64() > intPtr_EndOfModuleMemory.ToInt64())
                 {
                     nSize = (IntPtr)(intPtr_EndOfModuleMemory.ToInt64() - intPtr_Scannning.ToInt64());
                 }
 
                 IntPtr intPtr_NumberOfBytesRead = IntPtr.Zero;
+
+                // read memory
                 if (NativeMethods.ReadProcessMemory(_process.Handle, intPtr_Scannning, splitMemoryArray, nSize, ref intPtr_NumberOfBytesRead))
                 {
-                    int num2 = 0;
-                    // 切り出したメモリ内を1バイトずつずらしてPatternと合っているか確認していく
-                    while ((long)num2 < intPtr_NumberOfBytesRead.ToInt64() - (long)patternByteArray.Length - 4L + 1L)
+                    int num = 0;
+
+                    // slide start point byte bu byte, check with patternByteArray
+                    while ((long)num < intPtr_NumberOfBytesRead.ToInt64() - (long)patternByteArray.Length)
                     {
                         int matchCount = 0;
                         for (int j = 0; j < patternByteArray.Length; j++)
                         {
-                            // ??だった部分はマッチしたとしてスルー
+                            // pattern "??" have a null value. in this case, skip the check.
                             if (!patternByteArray[j].HasValue)
                             {
                                 matchCount++;
                             }
                             else
                             {
-                                if (patternByteArray[j].Value != splitMemoryArray[num2 + j])
+                                if (patternByteArray[j].Value != splitMemoryArray[num + j])
                                 {
                                     break;
                                 }
@@ -206,15 +209,15 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                             switch (architecture)
                             {
                                 case Architecture.x64:
-                                    item = new IntPtr(BitConverter.ToInt64(splitMemoryArray, num2 + patternByteArray.Length));
+                                    item = new IntPtr(BitConverter.ToInt64(splitMemoryArray, num + patternByteArray.Length));
                                     item = new IntPtr(item.ToInt64());
                                     break;
                                 case Architecture.x64_RIP_relative:
-                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num2 + patternByteArray.Length));
-                                    item = new IntPtr(item.ToInt64() + intPtr_Scannning.ToInt64() + (long)num2 + (long)patternByteArray.Length + 4L);
+                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num + patternByteArray.Length));
+                                    item = new IntPtr(item.ToInt64() + intPtr_Scannning.ToInt64() + (long)num + (long)patternByteArray.Length + 4L);
                                     break;
                                 case Architecture.x86:
-                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num2 + patternByteArray.Length));
+                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num + patternByteArray.Length));
                                     item = new IntPtr(item.ToInt64());
                                     break;
                             }
@@ -226,7 +229,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                             }
 
                         }
-                        num2++;
+                        num++;
                     }
                 }
                 intPtr_Scannning = IntPtr.Add(intPtr_Scannning, splitSizeOfMemory - patternByteArray.Length);
