@@ -4,27 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TamanegiMage.FFXIV_MemoryReader.Core"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" Width="376.5">
+             mc:Ignorable="d" Width="364.537" Height="221.779">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="26"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Label Content="FFXIV MemoryReader" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Height="26" Width="128"/>
-        <Grid Height="87" Margin="5,5,5,0" Grid.Row="1" VerticalAlignment="Top">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="21"/>
-                <RowDefinition Height="21"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="88"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Label Content="Process ID:" Margin="0,0,3,0" VerticalAlignment="Top" Padding="1" HorizontalAlignment="Right" Height="18" Width="59"/>
-            <TextBlock Margin="5,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding ProcessId}" Height="16" Grid.Column="1"/>
-        </Grid>
+        <Button x:Name="Button_ShowLiveLog" Content="Show Live Log" HorizontalAlignment="Left" Margin="10,59,0,0" Grid.Row="1" VerticalAlignment="Top" Width="138" Click="Button_ShowLiveLog_Click"/>
+        <Button x:Name="Button_OpenLogDirectory" Content="Open Log Directory" HorizontalAlignment="Left" Margin="10,94,0,0" Grid.Row="1" VerticalAlignment="Top" Width="138" Click="Button_OpenLogDirectory_Click"/>
+        <TextBlock HorizontalAlignment="Left" Margin="21,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="このプラグインは単体で使用するプラグインではありません。" VerticalAlignment="Top"/>
 
     </Grid>
 </UserControl>

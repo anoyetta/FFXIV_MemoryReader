@@ -96,7 +96,6 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             else if (!memory.IsValid)
             {
                 Logger.Info("Lost Process.");
-                mainControl.BindingData.ClearAll();
                 memory?.Dispose();
                 memory = null;
             }
@@ -113,19 +112,16 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 {
                     try
                     {
-                        Logger.Info("New Process Found. {0}", process.Id);
-                        mainControl.BindingData.ProcessId = process.Id;
+                        Logger.Info("New Process Found: {0}", process.Id);
                         memory = new Memory(process, Logger);
                     }
                     catch
                     {
-                        mainControl.BindingData.ClearAll();
                         memory = null;
                     }
                 }
                 else if (process == null && memory != null)
                 {
-                    mainControl.BindingData.ClearAll();
                     memory?.Dispose();
                     memory = null;
                 }
