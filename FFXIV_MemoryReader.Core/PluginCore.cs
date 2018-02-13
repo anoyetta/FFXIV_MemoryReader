@@ -17,6 +17,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         TabPage tabPage;
         Label label;
         ElementHost elementHost;
+        MainControl mainControl = null;
         Memory memory;
         System.Timers.Timer processChecker;
         private object _lock = new object();
@@ -72,7 +73,9 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
             tabPage.Text = "FFXIV_MemoryReader";
             tabPage.Controls.Clear();
-            tabPage.Controls.Add(elementHost = new ElementHost() { Child = new MainControl(), Dock = DockStyle.Fill });
+
+            mainControl = new MainControl();
+            tabPage.Controls.Add(elementHost = new ElementHost() { Child = mainControl, Dock = DockStyle.Fill });
 
             Logger.Trace("Start ProcessChecker Timer");
             processChecker.Start();
@@ -93,6 +96,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             else if (!memory.IsValid)
             {
                 Logger.Info("Lost Process.");
+                mainControl.BindingData.ClearAll();
                 memory?.Dispose();
                 memory = null;
             }
@@ -110,15 +114,18 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     try
                     {
                         Logger.Info("New Process Found. {0}", process.Id);
+                        mainControl.BindingData.ProcessId = process.Id;
                         memory = new Memory(process, Logger);
                     }
                     catch
                     {
+                        mainControl.BindingData.ClearAll();
                         memory = null;
                     }
                 }
                 else if (process == null && memory != null)
                 {
+                    mainControl.BindingData.ClearAll();
                     memory?.Dispose();
                     memory = null;
                 }
