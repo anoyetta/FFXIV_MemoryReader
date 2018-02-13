@@ -10,32 +10,39 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
         internal unsafe List<Model.CombatantV1> GetCombatantsV1()
         {
-            int num = 344;
             List<CombatantV1> result = new List<CombatantV1>();
-            
-            int sz = 8;
-            byte[] source = GetByteArray(Pointers[PointerType.MobArray].Address, sz * num);
-            if (source == null || source.Length == 0) { return result; }
 
-            for (int i = 0; i < num; i++)
+            try
             {
-                IntPtr p;
-                fixed (byte* bp = source) p = new IntPtr(*(Int64*)&bp[i * sz]);
+                int num = 344;
+                int sz = 8;
+                byte[] source = GetByteArray(Pointers[PointerType.MobArray].Address, sz * num);
+                if (source == null || source.Length == 0) { return result; }
 
-                if (!(p == IntPtr.Zero))
+                for (int i = 0; i < num; i++)
                 {
-                    byte[] c = GetByteArray(p, combatantDataSize);
-                    CombatantV1 combatant = GetCombatantFromByteArray(c);
-                    if (combatant.type != ObjectType.PC && combatant.type != ObjectType.Monster)
+                    IntPtr p;
+                    fixed (byte* bp = source) p = new IntPtr(*(Int64*)&bp[i * sz]);
+
+                    if (!(p == IntPtr.Zero))
                     {
-                        continue;
-                    }
-                    if (combatant.ID != 0 && combatant.ID != 3758096384u && !result.Exists((CombatantV1 x) => x.ID == combatant.ID))
-                    {
-                        combatant.Order = i;
-                        result.Add(combatant);
+                        byte[] c = GetByteArray(p, combatantDataSize);
+                        CombatantV1 combatant = GetCombatantFromByteArray(c);
+                        if (combatant.type != ObjectType.PC && combatant.type != ObjectType.Monster)
+                        {
+                            continue;
+                        }
+                        if (combatant.ID != 0 && combatant.ID != 3758096384u && !result.Exists((CombatantV1 x) => x.ID == combatant.ID))
+                        {
+                            combatant.Order = i;
+                            result.Add(combatant);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
             
             return result;
