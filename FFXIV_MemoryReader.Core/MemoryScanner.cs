@@ -202,7 +202,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                             }
                         }
 
-                        // 最後まで行ったら見つかったと言うこと
+                        // if all bytes are match, it means "the pattern found"
                         if (matchCount == patternByteArray.Length)
                         {
                             IntPtr item = IntPtr.Zero;
@@ -222,7 +222,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                                     break;
                             }
 
-                            // ToDo: 重複排除して追加する！
+                            // add the item if not contains already
                             if (item != IntPtr.Zero && !list.Contains(item))
                             {
                                 list.Add(item);
