@@ -4,9 +4,24 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TamanegiMage.FFXIV_MemoryReader.Core"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             mc:Ignorable="d" Width="435.537" Height="274.779">
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="53"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Content="FFXIV MemoryReader" HorizontalAlignment="Left" VerticalAlignment="Top" Height="34" Width="211" FontSize="18"/>
+        <Grid Margin="5,5,15,15" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="115"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button x:Name="Button_ShowLiveLog" Content="Show Live Log" HorizontalAlignment="Left" Margin="10,5,0,0" Grid.Row="1" VerticalAlignment="Top" Width="182" Click="Button_ShowLiveLog_Click" Height="30" FontSize="16"/>
+            <Button x:Name="Button_OpenLogDirectory" Content="Open Log Directory" HorizontalAlignment="Left" Margin="10,5,0,0" Grid.Row="2" VerticalAlignment="Top" Width="182" Click="Button_OpenLogDirectory_Click" Height="30" FontSize="16"/>
+        </Grid>
+        <TextBlock Margin="5,28,0,0" TextWrapping="Wrap" HorizontalAlignment="Left" Width="169" Height="21" VerticalAlignment="Top" FontSize="14"><Hyperlink NavigateUri="https://github.com/TamanegiMage/FFXIV_MemoryReader"><Run Text="GitHub Project Page"/></Hyperlink></TextBlock>
+
     </Grid>
 </UserControl>

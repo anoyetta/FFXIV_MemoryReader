@@ -12,6 +12,8 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         private Process _process;
         internal Process Process => _process;
 
+        private bool IsMemoryScanningComplete = false;
+
         enum PointerType
         {
             MobArray,
@@ -36,20 +38,26 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             Logger = logger;
             _process = process;
 
-            Logger.Trace("MemoryReader Start.");
+            Logger.Info("MemoryReader Start.");
+
             ResolvePointers();
+            IsMemoryScanningComplete = true;
             foreach (var p in Pointers)
             {
-                Logger.Trace("{0} -> {1}", p.Key, p.Value.Address.ToInt64());
+                Logger.Info("{0} -> {1}", p.Key, p.Value.Address.ToInt64());
             }
         }
 
         public void Dispose()
         {
-            Logger.Trace("MemoryReader Dispose Called.");
+            Logger.Info("MemoryReader Dispose Called.");
+            Pointers = new Dictionary<PointerType, Pointer>();
+            _process = null;
+            Logger.Info("MemoryReader Dispose Finished.");
         }
 
         public bool IsValid => ValidateProcess();
+        public bool HasAllPointers => ValidatePointers();
         private bool ValidateProcess()
         {
             if (_process == null)
@@ -62,6 +70,17 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 return false;
             }
 
+            return true;
+        }
+
+        private bool ValidatePointers()
+        {
+            // If Scanning is not completed, return true
+            if (!IsMemoryScanningComplete)
+            {
+                return true;
+            }
+
             foreach (var p in Pointers)
             {
                 if (p.Value.Address == IntPtr.Zero)
@@ -69,9 +88,9 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     return false;
                 }
             }
+
             return true;
         }
-
 
 
         private bool ResolvePointers()
@@ -80,6 +99,10 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
             foreach (var p in Pointers)
             {
+                Logger.Info("Scannning Pointer {0} Start.", p.Key);
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+
                 var baseAddress = SearchLocations(p.Value.Signature, p.Value.Architecture).FirstOrDefault();
                 if (baseAddress == IntPtr.Zero)
                 {
@@ -95,8 +118,6 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     {
                         baseAddress = new IntPtr(nextAddress.ToInt64() + offset);
 
-                        //IntPtr lpNumberOfBytesRead = IntPtr.Zero;
-
                         switch (p.Value.Architecture)
                         {
                             case Architecture.x64:
@@ -104,19 +125,19 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                                 // RIP Relative なのは最初だけ？
                                 var b_x64 = new byte[8];
                                 Peek(baseAddress, b_x64);
-                                //NativeMethods.ReadProcessMemory(_process.Handle, baseAddress, b_x64, new IntPtr(b_x64.Length), ref lpNumberOfBytesRead);
                                 nextAddress = new IntPtr(BitConverter.ToInt64(b_x64, 0));
                                 break;
                             case Architecture.x86:
                                 var b_x86 = new byte[4];
                                 Peek(baseAddress, b_x86);
-                                //NativeMethods.ReadProcessMemory(_process.Handle, baseAddress, b_x86, new IntPtr(b_x86.Length), ref lpNumberOfBytesRead);
                                 nextAddress = new IntPtr(BitConverter.ToInt32(b_x86, 0));
                                 break;
                         }
                     }
                     p.Value.Address = baseAddress;
                 }
+                stopWatch.Stop();
+                Logger.Info("Scannning Pointer {0} Finisend. Time= {1:#,0}ms", p.Key, stopWatch.ElapsedMilliseconds);
             }
 
             return success;
@@ -139,7 +160,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             // 1byte = 2char
             byte?[] patternByteArray = new byte?[pattern.Length / 2];
 
-            // Convert Pattern to Array of Byte
+            // Convert Pattern to "Array of Byte"
             for (int i = 0; i < pattern.Length / 2; i++)
             {
                 string text = pattern.Substring(i * 2, 2);
@@ -163,35 +184,38 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
             List<IntPtr> list = new List<IntPtr>();
 
-            // スキャン開始位置が最後まで行ったら検索
+            // while loop for scan all memory
             while (intPtr_Scannning.ToInt64() < intPtr_EndOfModuleMemory.ToInt64())
             {
                 IntPtr nSize = new IntPtr(splitSizeOfMemory);
 
-                // (最後のsplitで) 残ったメモリがsplitSizeより小さかった場合は、残りのサイズにする
+                // if remaining memory size is less than splitSize, change nSize to remaining size
                 if (IntPtr.Add(intPtr_Scannning, splitSizeOfMemory).ToInt64() > intPtr_EndOfModuleMemory.ToInt64())
                 {
                     nSize = (IntPtr)(intPtr_EndOfModuleMemory.ToInt64() - intPtr_Scannning.ToInt64());
                 }
 
                 IntPtr intPtr_NumberOfBytesRead = IntPtr.Zero;
+
+                // read memory
                 if (NativeMethods.ReadProcessMemory(_process.Handle, intPtr_Scannning, splitMemoryArray, nSize, ref intPtr_NumberOfBytesRead))
                 {
-                    int num2 = 0;
-                    // 切り出したメモリ内を1バイトずつずらしてPatternと合っているか確認していく
-                    while ((long)num2 < intPtr_NumberOfBytesRead.ToInt64() - (long)patternByteArray.Length - 4L + 1L)
+                    int num = 0;
+
+                    // slide start point byte bu byte, check with patternByteArray
+                    while ((long)num < intPtr_NumberOfBytesRead.ToInt64() - (long)patternByteArray.Length)
                     {
                         int matchCount = 0;
                         for (int j = 0; j < patternByteArray.Length; j++)
                         {
-                            // ??だった部分はマッチしたとしてスルー
+                            // pattern "??" have a null value. in this case, skip the check.
                             if (!patternByteArray[j].HasValue)
                             {
                                 matchCount++;
                             }
                             else
                             {
-                                if (patternByteArray[j].Value != splitMemoryArray[num2 + j])
+                                if (patternByteArray[j].Value != splitMemoryArray[num + j])
                                 {
                                     break;
                                 }
@@ -199,34 +223,34 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                             }
                         }
 
-                        // 最後まで行ったら見つかったと言うこと
+                        // if all bytes are match, it means "the pattern found"
                         if (matchCount == patternByteArray.Length)
                         {
                             IntPtr item = IntPtr.Zero;
                             switch (architecture)
                             {
                                 case Architecture.x64:
-                                    item = new IntPtr(BitConverter.ToInt64(splitMemoryArray, num2 + patternByteArray.Length));
+                                    item = new IntPtr(BitConverter.ToInt64(splitMemoryArray, num + patternByteArray.Length));
                                     item = new IntPtr(item.ToInt64());
                                     break;
                                 case Architecture.x64_RIP_relative:
-                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num2 + patternByteArray.Length));
-                                    item = new IntPtr(item.ToInt64() + intPtr_Scannning.ToInt64() + (long)num2 + (long)patternByteArray.Length + 4L);
+                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num + patternByteArray.Length));
+                                    item = new IntPtr(item.ToInt64() + intPtr_Scannning.ToInt64() + (long)num + (long)patternByteArray.Length + 4L);
                                     break;
                                 case Architecture.x86:
-                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num2 + patternByteArray.Length));
+                                    item = new IntPtr(BitConverter.ToInt32(splitMemoryArray, num + patternByteArray.Length));
                                     item = new IntPtr(item.ToInt64());
                                     break;
                             }
 
-                            // ToDo: 重複排除して追加する！
+                            // add the item if not contains already
                             if (item != IntPtr.Zero && !list.Contains(item))
                             {
                                 list.Add(item);
                             }
 
                         }
-                        num2++;
+                        num++;
                     }
                 }
                 intPtr_Scannning = IntPtr.Add(intPtr_Scannning, splitSizeOfMemory - patternByteArray.Length);
