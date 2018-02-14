@@ -12,6 +12,8 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         private Process _process;
         internal Process Process => _process;
 
+        private bool IsMemoryScanningComplete = false;
+
         enum PointerType
         {
             MobArray,
@@ -36,20 +38,26 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             Logger = logger;
             _process = process;
 
-            Logger.Trace("MemoryReader Start.");
+            Logger.Info("MemoryReader Start.");
+
             ResolvePointers();
+            IsMemoryScanningComplete = true;
             foreach (var p in Pointers)
             {
-                Logger.Trace("{0} -> {1}", p.Key, p.Value.Address.ToInt64());
+                Logger.Info("{0} -> {1}", p.Key, p.Value.Address.ToInt64());
             }
         }
 
         public void Dispose()
         {
-            Logger.Trace("MemoryReader Dispose Called.");
+            Logger.Info("MemoryReader Dispose Called.");
+            Pointers = new Dictionary<PointerType, Pointer>();
+            _process = null;
+            Logger.Info("MemoryReader Dispose Finished.");
         }
 
         public bool IsValid => ValidateProcess();
+        public bool HasAllPointers => ValidatePointers();
         private bool ValidateProcess()
         {
             if (_process == null)
@@ -62,6 +70,17 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 return false;
             }
 
+            return true;
+        }
+
+        private bool ValidatePointers()
+        {
+            // If Scanning is not completed, return true
+            if (!IsMemoryScanningComplete)
+            {
+                return true;
+            }
+
             foreach (var p in Pointers)
             {
                 if (p.Value.Address == IntPtr.Zero)
@@ -69,9 +88,9 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     return false;
                 }
             }
+
             return true;
         }
-
 
 
         private bool ResolvePointers()
@@ -80,6 +99,10 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
             foreach (var p in Pointers)
             {
+                Logger.Info("Scannning Pointer {0} Start.", p.Key);
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+
                 var baseAddress = SearchLocations(p.Value.Signature, p.Value.Architecture).FirstOrDefault();
                 if (baseAddress == IntPtr.Zero)
                 {
@@ -95,8 +118,6 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     {
                         baseAddress = new IntPtr(nextAddress.ToInt64() + offset);
 
-                        //IntPtr lpNumberOfBytesRead = IntPtr.Zero;
-
                         switch (p.Value.Architecture)
                         {
                             case Architecture.x64:
@@ -104,19 +125,19 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                                 // RIP Relative なのは最初だけ？
                                 var b_x64 = new byte[8];
                                 Peek(baseAddress, b_x64);
-                                //NativeMethods.ReadProcessMemory(_process.Handle, baseAddress, b_x64, new IntPtr(b_x64.Length), ref lpNumberOfBytesRead);
                                 nextAddress = new IntPtr(BitConverter.ToInt64(b_x64, 0));
                                 break;
                             case Architecture.x86:
                                 var b_x86 = new byte[4];
                                 Peek(baseAddress, b_x86);
-                                //NativeMethods.ReadProcessMemory(_process.Handle, baseAddress, b_x86, new IntPtr(b_x86.Length), ref lpNumberOfBytesRead);
                                 nextAddress = new IntPtr(BitConverter.ToInt32(b_x86, 0));
                                 break;
                         }
                     }
                     p.Value.Address = baseAddress;
                 }
+                stopWatch.Stop();
+                Logger.Info("Scannning Pointer {0} Finisend. Time= {1:#,0}ms", p.Key, stopWatch.ElapsedMilliseconds);
             }
 
             return success;

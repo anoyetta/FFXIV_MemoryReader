@@ -25,25 +25,23 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         public PluginCore()
         {
             InitizalizeLogger();
-
-            Logger.Trace("PluginCore Start.");
+            Logger.Info("########## FFXIV_MemoryReader Started. ##########");
+            Logger.Info("PluginCore Constructor Called.");
             processChecker = new System.Timers.Timer();
             processChecker.Elapsed += ProessChecker_Elapsed;
             processChecker.Interval = 200;
-
-            Logger.Trace("PluginCore End.");
+            Logger.Info("PluginCore Constructor End.");
         }
 
         public void Dispose()
         {
-            Logger.Trace("PluginCore Dispose Called.");
-
+            Logger.Info("PluginCore Dispose Called.");
             processChecker.Stop();
             processChecker.Dispose();
-
             memory?.Dispose();
-
-            Logger.Trace("PluginCore Dispose Finished.");
+            label.Text = "Stopped.";
+            Logger.Info("PluginCore Dispose Finished.");
+            Logger.Info("########## FFXIV_MemoryReader Finished. ##########");
         }
 
         private void InitizalizeLogger()
@@ -66,7 +64,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
         public void Init(TabPage pluginScreenSpace, Label pluginStatusText)
         {
-            Logger.Trace("PluginCore->Init Start.");
+            Logger.Info("PluginCore Init Called.");
 
             tabPage = pluginScreenSpace;
             label = pluginStatusText;
@@ -74,13 +72,14 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             tabPage.Text = "FFXIV_MemoryReader";
             tabPage.Controls.Clear();
 
+            Logger.Info("Creating Plugin Screen.");
             mainControl = new MainControl();
             tabPage.Controls.Add(elementHost = new ElementHost() { Child = mainControl, Dock = DockStyle.Fill });
 
-            Logger.Trace("Start ProcessChecker Timer");
+            Logger.Info("ProcessChecker Timer Start.");
             processChecker.Start();
-
-            Logger.Trace("PluginCore->Init End.");
+            label.Text = "Started.";
+            Logger.Info("PluginCore Init Ended.");
         }
         private void ProessChecker_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -95,7 +94,13 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             }
             else if (!memory.IsValid)
             {
-                Logger.Info("Lost Process.");
+                Logger.Error("FFXIV Process Lost.");
+                memory?.Dispose();
+                memory = null;
+            }
+            else if(!memory.HasAllPointers)
+            {
+                Logger.Error("FFXIV Process is alive, but some Pointer not found.");
                 memory?.Dispose();
                 memory = null;
             }
@@ -112,7 +117,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 {
                     try
                     {
-                        Logger.Info("New Process Found: {0}", process.Id);
+                        Logger.Info("FFXIV Process Found: {0}", process.Id);
                         memory = new Memory(process, Logger);
                     }
                     catch
