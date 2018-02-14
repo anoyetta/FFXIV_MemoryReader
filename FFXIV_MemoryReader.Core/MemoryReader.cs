@@ -11,6 +11,10 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         internal unsafe List<Model.CombatantV1> GetCombatantsV1()
         {
             List<CombatantV1> result = new List<CombatantV1>();
+            if(Pointers[PointerType.MobArray].Address == IntPtr.Zero)
+            {
+                return result;
+            }
 
             try
             {
