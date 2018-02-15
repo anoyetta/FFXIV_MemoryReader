@@ -126,4 +126,10 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
             return ID > 0 && TargetID > 0;
         }
     }
+
+    public class CameraInfoV1
+    {
+        public byte Mode;
+        public Single Heading;
+    }
 }

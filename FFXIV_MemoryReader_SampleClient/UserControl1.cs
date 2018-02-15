@@ -59,5 +59,31 @@ namespace FFXIV_MemoryReader_SampleClient
 
 
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            IActPluginV1 plugin = null;
+            foreach (var p in ActGlobals.oFormActMain.ActPlugins)
+            {
+                if (p.pluginFile.Name == "FFXIV_MemoryReader.dll")
+                {
+                    plugin = p.pluginObj;
+                    break;
+                }
+            }
+
+            if (plugin != null)
+            {
+                var memoryPlugin = plugin as MemoryPlugin;
+
+                CameraInfoV1 cameraInfo = memoryPlugin.GetCameraInfoV1();
+                if(cameraInfo != null)
+                {
+                    MessageBox.Show(String.Format("Mode={0}, Heading={1}",cameraInfo.Mode.ToString(), cameraInfo.Heading.ToString()));
+                }
+            }
+            plugin = null;
+
+        }
     }
 }

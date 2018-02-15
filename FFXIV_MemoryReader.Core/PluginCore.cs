@@ -153,6 +153,22 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             return result;
         }
 
+        public Model.CameraInfoV1 GetCameraInfoV1()
+        {
+            Model.CameraInfoV1 result = new Model.CameraInfoV1();
+            try
+            {
+                if (memory != null && memory.IsValid)
+                {
+                    result = memory.GetCameraInfoV1();
+                }
+            }
+            catch
+            {
+                result = null;
+            }
+            return result;
+        }
 
 
     }
