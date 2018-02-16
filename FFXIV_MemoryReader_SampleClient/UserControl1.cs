@@ -28,10 +28,8 @@ namespace FFXIV_MemoryReader_SampleClient
             this.Dock = DockStyle.Fill;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private IActPluginV1 GetFFXIVMemoryReaderPlugin()
         {
-            this.dataGridView1.Rows.Clear();
-
             IActPluginV1 plugin = null;
             foreach (var p in ActGlobals.oFormActMain.ActPlugins)
             {
@@ -41,7 +39,16 @@ namespace FFXIV_MemoryReader_SampleClient
                     break;
                 }
             }
+            return plugin;
+        }
 
+
+        #region Combatants
+        private void Button_GetCombatants_Click(object sender, EventArgs e)
+        {
+            this.dataGridView1.Rows.Clear();
+
+            IActPluginV1 plugin = GetFFXIVMemoryReaderPlugin();
 
             if (plugin != null)
             {
@@ -56,34 +63,53 @@ namespace FFXIV_MemoryReader_SampleClient
                 }
             }
             plugin = null;
-
-
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        #endregion
+
+        #region CameraInfo
+
+        Timer CameraInfoTimer = new Timer();
+
+        private void Button_CameraInfo_Click(object sender, EventArgs e)
         {
-            IActPluginV1 plugin = null;
-            foreach (var p in ActGlobals.oFormActMain.ActPlugins)
+            if (Button_CameraInfo.Text == "Start")
             {
-                if (p.pluginFile.Name == "FFXIV_MemoryReader.dll")
-                {
-                    plugin = p.pluginObj;
-                    break;
-                }
+                CameraInfoTimer.Interval = 200;
+                CameraInfoTimer.Tick += UpdateCameraInfo;
+                CameraInfoTimer.Enabled = true;
+                Button_CameraInfo.Text = "Stop";
             }
+            else if (Button_CameraInfo.Text == "Stop")
+            {
+                CameraInfoTimer.Tick -= UpdateCameraInfo;
+                CameraInfoTimer.Enabled = true;
+                CameraInfoTimer.Enabled = false;
+                Button_CameraInfo.Text = "Start";
+            }
+        }
+
+
+        private void UpdateCameraInfo(object sender, EventArgs e)
+        {
+            IActPluginV1 plugin = GetFFXIVMemoryReaderPlugin();
 
             if (plugin != null)
             {
                 var memoryPlugin = plugin as MemoryPlugin;
 
                 CameraInfoV1 cameraInfo = memoryPlugin.GetCameraInfoV1();
-                if(cameraInfo != null)
+                if (cameraInfo != null)
                 {
-                    MessageBox.Show(String.Format("Mode={0}, Heading={1}",cameraInfo.Mode.ToString(), cameraInfo.Heading.ToString()));
+                    textBox_Camera_Mode.Text = cameraInfo.Mode.ToString();
+                    textBox_Camera_Heading.Text = cameraInfo.Heading.ToString();
+                    textBox_Camera_Elevation.Text = cameraInfo.Elevation.ToString();
                 }
             }
             plugin = null;
 
         }
+
+        #endregion
     }
 }
