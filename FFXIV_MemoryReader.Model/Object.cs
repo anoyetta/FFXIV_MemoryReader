@@ -131,5 +131,6 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
     {
         public byte Mode;
         public Single Heading;
+        public Single Elevation;
     }
 }

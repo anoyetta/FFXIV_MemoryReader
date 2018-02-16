@@ -160,6 +160,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     int offset = 0x120;
                     result.Mode = p[offset];
                     result.Heading = *(Single*)&p[offset + 36];
+                    result.Elevation = *(Single*)&p[offset + 40];
                 }
             }
             catch (Exception ex)
