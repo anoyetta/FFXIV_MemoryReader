@@ -41,11 +41,11 @@
     </Reference>
     <Reference Include="FFXIV_MemoryReader.Base, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Distributions\SDK\FFXIV_MemoryReader.Base.dll</HintPath>
+      <HintPath>..\Build\SDK\FFXIV_MemoryReader.Base.dll</HintPath>
     </Reference>
     <Reference Include="FFXIV_MemoryReader.Model, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Distributions\SDK\FFXIV_MemoryReader.Model.dll</HintPath>
+      <HintPath>..\Build\SDK\FFXIV_MemoryReader.Model.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
