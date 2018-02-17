@@ -29,7 +29,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             Logger.Info("PluginCore Constructor Called.");
             processChecker = new System.Timers.Timer();
             processChecker.Elapsed += ProessChecker_Elapsed;
-            processChecker.Interval = 200;
+            processChecker.Interval = 500;
             Logger.Info("PluginCore Constructor End.");
         }
 
@@ -95,12 +95,6 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             else if (!memory.IsValid)
             {
                 Logger.Error("FFXIV Process Lost.");
-                memory?.Dispose();
-                memory = null;
-            }
-            else if(!memory.HasAllPointers)
-            {
-                Logger.Error("FFXIV Process is alive, but some Pointer not found.");
                 memory?.Dispose();
                 memory = null;
             }
