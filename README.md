@@ -39,15 +39,15 @@ FFXIV_MemoryReader は Final Fantasy XIV のメモリをスキャンし、
 
 ## ビルド
 
-Release でビルドをすると、ビルド後の実行処理により、 `Distributions` ディレクトリに  
+Release でビルドをすると、ビルド後の実行処理により、 `Build` ディレクトリに  
 プラグイン本体と SDK の DLL が作成されます。
 
 ```
-Distributions/  
-   ├ FFXIV_MemoryReader.dll
-   └ SDK/
-      ├ FFXIV_MemoryReader.Base.dll
-      └ FFXIV_MemoryReader.Model.dll
+Build/  
+  ├ FFXIV_MemoryReader.dll
+  └ SDK/
+     ├ FFXIV_MemoryReader.Base.dll
+     └ FFXIV_MemoryReader.Model.dll
 ```
 
 なお、プラグインの本体 `FFXIV_MemoryReader.dll` は以下の4つの DLL を `libz` で結合した物です。

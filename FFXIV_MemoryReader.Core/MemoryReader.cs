@@ -141,5 +141,35 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             return combatant;
         }
 
+        public unsafe CameraInfoV1 GetCameraInfoV1()
+        {
+            CameraInfoV1 result = new CameraInfoV1();
+
+            if (Pointers[PointerType.CameraInfo].Address == IntPtr.Zero)
+            {
+                return result;
+            }
+
+            try
+            {
+                byte[] source = GetByteArray(Pointers[PointerType.CameraInfo].Address, 512);
+                if (source == null || source.Length == 0) { return result; }
+
+                fixed (byte* p = source)
+                {
+                    int offset = 0x120;
+                    result.Mode = p[offset];
+                    result.Heading = *(Single*)&p[offset + 36];
+                    result.Elevation = *(Single*)&p[offset + 40];
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            return result;
+        }
+
     }
 }
