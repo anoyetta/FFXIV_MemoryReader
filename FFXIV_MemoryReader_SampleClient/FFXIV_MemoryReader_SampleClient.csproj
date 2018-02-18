@@ -88,6 +88,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)Thirdparty\libz.exe inject-dll --assembly FFXIV_MemoryReader_SampleClient.dll -include FFXIV_MemoryReader.Base.dll -include FFXIV_MemoryReader.Model.dll --move</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)Thirdparty\libz.exe inject-dll --assembly FFXIV_MemoryReader_SampleClient.dll -include FFXIV_MemoryReader.Model.dll --move</PostBuildEvent>
   </PropertyGroup>
 </Project>
