@@ -46,7 +46,6 @@ Release でビルドをすると、ビルド後の実行処理により、 `Buil
 Build/  
   ├ FFXIV_MemoryReader.dll
   └ SDK/
-     ├ FFXIV_MemoryReader.Base.dll
      └ FFXIV_MemoryReader.Model.dll
 ```
 
@@ -62,13 +61,11 @@ Build/
 
 具体的には、まずSDKのDLLを参照に追加します。
 
-- `FFXIV_MemoryReader.Base.dll` を参照に追加
 - `FFXIV_MemoryReader.Model.dll` を参照に追加
 
 また、usingにも追加します。
 
 ```C#
-using TamanegiMage.FFXIV_MemoryReader.Base;
 using TamanegiMage.FFXIV_MemoryReader.Model;
 ```
 
@@ -88,8 +85,8 @@ using TamanegiMage.FFXIV_MemoryReader.Model;
 
     if (plugin != null)
     {
-        var memoryPlugin = plugin as MemoryPlugin;
-        List<CombatantV1> combatants = memoryPlugin.GetCombatantsV1();
+        dynamic memoryPlugin = plugin;
+        List<CombatantV1> combatants = memoryPlugin?.GetCombatantsV1();
         if (combatants != null)
         {
             // 任意の処理
@@ -100,8 +97,8 @@ using TamanegiMage.FFXIV_MemoryReader.Model;
 
 ## [Optional] 作成したプラグインをまとめる
 
-あなたがこのように作成した ACT プラグイン DLL は、少なくとも2つの外部ライブラリ  
-`FFXIV_MemoryReader.Base.dll`, `FFXIV_MemoryReader.Model.dll` を必要とします。  
+あなたがこのように作成した ACT プラグイン DLL は、  
+外部ライブラリ `FFXIV_MemoryReader.Model.dll` を必要とします。  
 (他にパッケージを使った場合はそれも必要となります。)
 
 ビルド結果の `Release`, `Debug` フォルダには、あなたが作った DLL の他に、  

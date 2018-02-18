@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using TamanegiMage.FFXIV_MemoryReader.Base;
 using TamanegiMage.FFXIV_MemoryReader.Model;
 
 namespace FFXIV_MemoryReader_SampleClient
@@ -52,8 +51,8 @@ namespace FFXIV_MemoryReader_SampleClient
 
             if (plugin != null)
             {
-                var memoryPlugin = plugin as MemoryPlugin;
-                List<CombatantV1> combatants = memoryPlugin.GetCombatantsV1();
+                dynamic memoryPlugin = plugin;
+                List<CombatantV1> combatants = memoryPlugin?.GetCombatantsV1();
                 if (combatants != null)
                 {
                     foreach (var combatant in combatants)
@@ -96,9 +95,9 @@ namespace FFXIV_MemoryReader_SampleClient
 
             if (plugin != null)
             {
-                var memoryPlugin = plugin as MemoryPlugin;
+                dynamic memoryPlugin = plugin;
 
-                CameraInfoV1 cameraInfo = memoryPlugin.GetCameraInfoV1();
+                CameraInfoV1 cameraInfo = memoryPlugin?.GetCameraInfoV1();
                 if (cameraInfo != null)
                 {
                     textBox_Camera_Mode.Text = cameraInfo.Mode.ToString();
