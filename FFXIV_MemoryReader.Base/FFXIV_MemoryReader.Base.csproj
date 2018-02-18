@@ -73,7 +73,6 @@ del $(SolutionDir)Build /f /s /q
 copy /y FFXIV_MemoryReader.Base.dll $(SolutionDir)Build\FFXIV_MemoryReader.dll
 $(SolutionDir)Thirdparty\libz.exe inject-dll --assembly $(SolutionDir)Build\FFXIV_MemoryReader.dll -include FFXIV_MemoryReader.Core.dll -include FFXIV_MemoryReader.Model.dll -include NLog.dll
 
-copy /y FFXIV_MemoryReader.Base.dll $(SolutionDir)Build\SDK\
 copy /y FFXIV_MemoryReader.Model.dll $(SolutionDir)Build\SDK\
 </PostBuildEvent>
   </PropertyGroup>

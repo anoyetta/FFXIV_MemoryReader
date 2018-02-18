@@ -39,10 +39,6 @@
       <HintPath>..\Thirdparty\Advanced Combat Tracker.exe</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="FFXIV_MemoryReader.Base, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Build\SDK\FFXIV_MemoryReader.Base.dll</HintPath>
-    </Reference>
     <Reference Include="FFXIV_MemoryReader.Model, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Build\SDK\FFXIV_MemoryReader.Model.dll</HintPath>
