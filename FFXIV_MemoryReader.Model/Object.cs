@@ -112,7 +112,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
         public bool IsOwner;
         public bool IsValid()
         {
-            return StatusID > 0 && Duration <= 86400 && CasterID > 0;
+            return StatusID > 0 && Duration > 0.1f && Duration <= 86400 && CasterID > 0;
         }
     }
     public class CastV1
