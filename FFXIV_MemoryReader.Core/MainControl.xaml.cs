@@ -18,7 +18,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             try
             {
                 System.Diagnostics.Process.Start("powershell.exe",
-                    @"Get-ChildItem $env:APPDATA\TamanegiMage | Where-Object {$_.Name -match '^FFXIV_MemoryReader-.*\.log$'} | Sort-Object -Descending | Select-Object -First 1 | Get-Content -Wait -tail 20");
+                    @"Get-ChildItem $env:APPDATA\TamanegiMage | Where-Object {$_.Name -match '^FFXIV_MemoryReader-.*\.log$'} | Sort-Object -Descending | Select-Object -First 1 | Get-Content -Wait -tail 20 -Encoding UTF8");
             }
             catch
             {

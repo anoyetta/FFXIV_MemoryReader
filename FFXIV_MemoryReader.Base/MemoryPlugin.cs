@@ -24,6 +24,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Base
 
         public List<Model.CombatantV1> GetCombatantsV1() => Core.GetCombatantsV1();
         public Model.CameraInfoV1 GetCameraInfoV1() => Core.GetCameraInfoV1();
+        public List<Model.HotbarRecastV1> GetHotbarRecastV1() => Core.GetHotbarRecastV1();
 
     }
 }

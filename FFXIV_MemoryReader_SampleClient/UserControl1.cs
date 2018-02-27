@@ -110,5 +110,44 @@ namespace FFXIV_MemoryReader_SampleClient
         }
 
         #endregion
+
+        #region HotbarRecast
+
+        private void Button_GetHotbarRecast_Click(object sender, EventArgs e)
+        {
+            this.dataGridView2.Rows.Clear();
+
+            IActPluginV1 plugin = GetFFXIVMemoryReaderPlugin();
+
+            if (plugin != null)
+            {
+                dynamic memoryPlugin = plugin;
+                List<HotbarRecastV1> recasts = memoryPlugin?.GetHotbarRecastV1();
+                if (recasts != null)
+                {
+                    foreach (var recast in recasts)
+                    {
+                        this.dataGridView2.Rows.Add(new string[] {
+                            recast.HotbarType.ToString(),
+                            recast.ID.ToString(),
+                            recast.Slot.ToString(),
+                            recast.Name.ToString(),
+                            recast.Category.ToString(),
+                            recast.Type.ToString(),
+                            recast.Icon.ToString(),
+                            recast.CoolDownPercent.ToString(),
+                            recast.IsAvailable.ToString(),
+                            recast.RemainingOrCost.ToString(),
+                            recast.Amount.ToString(),
+                            recast.InRange.ToString(),
+                            recast.IsProcOrCombo.ToString()
+                        });
+                    }
+                }
+            }
+            plugin = null;
+        }
+
+        #endregion
     }
 }

@@ -133,4 +133,49 @@ namespace TamanegiMage.FFXIV_MemoryReader.Model
         public Single Heading;
         public Single Elevation;
     }
+
+    #region Hotbar
+    public enum HotbarType : byte
+    {
+        HOTBAR_1 = 0,
+        HOTBAR_2 = 1,
+        HOTBAR_3 = 2,
+        HOTBAR_4 = 3,
+        HOTBAR_5 = 4,
+        HOTBAR_6 = 5,
+        HOTBAR_7 = 6,
+        HOTBAR_8 = 7,
+        HOTBAR_9 = 8,
+        HOTBAR_10 = 9,
+        X_HOTBAR_1 = 10,
+        X_HOTBAR_2 = 11,
+        X_HOTBAR_3 = 12,
+        X_HOTBAR_4 = 13,
+        X_HOTBAR_5 = 14,
+        X_HOTBAR_6 = 15,
+        X_HOTBAR_7 = 16,
+        X_HOTBAR_8 = 17,
+        PETBAR = 18,
+        X_PETBAR = 19,
+    }
+
+    public class HotbarRecastV1
+    {
+        public HotbarType HotbarType { get; set; }
+        public int ID { get; set; }
+        public int Slot { get; set; }
+        public string Name { get; set; }
+
+        public int Category { get; set; }
+        public int Type { get; set; }
+        public int Icon { get; set; }
+        public int CoolDownPercent { get; set; }
+        public bool IsAvailable { get; set; }
+        public int RemainingOrCost { get; set; }
+        public int Amount { get; set; }
+        public bool InRange { get; set; }
+        public bool IsProcOrCombo { get; set; }
+    }
+
+    #endregion
 }
