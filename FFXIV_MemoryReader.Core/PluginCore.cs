@@ -129,7 +129,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         }
 
 
-        public List<Model.CombatantV1> GetConbatantsV1()
+        public List<Model.CombatantV1> GetCombatantsV1()
         {
             List<Model.CombatantV1> result = new List<Model.CombatantV1>();
             try
@@ -164,6 +164,22 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             return result;
         }
 
+        public List<Model.HotbarRecastV1> GetHotbarRecastV1()
+        {
+            List<Model.HotbarRecastV1> result = new List<Model.HotbarRecastV1>();
+            try
+            {
+                if(memory != null && memory.IsValid)
+                {
+                    result = memory.GetHotbarRecastV1();
+                }
+            }
+            catch
+            {
+                result = null;
+            }
+            return result;
+        }
 
     }
 

@@ -11,7 +11,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         internal unsafe List<Model.CombatantV1> GetCombatantsV1()
         {
             List<CombatantV1> result = new List<CombatantV1>();
-            if(Pointers[PointerType.MobArray].Address == IntPtr.Zero)
+            if (Pointers[PointerType.MobArray].Address == IntPtr.Zero)
             {
                 return result;
             }
@@ -48,7 +48,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             {
                 Logger.Error(ex);
             }
-            
+
             return result;
         }
 
@@ -72,7 +72,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 combatant.PosX = *(Single*)&p[offset];
                 combatant.PosZ = *(Single*)&p[offset + 4];
                 combatant.PosY = *(Single*)&p[offset + 8];
-                combatant.Heading  = *(Single*)&p[offset + 16];
+                combatant.Heading = *(Single*)&p[offset + 16];
 
                 combatant.TargetID = *(uint*)&p[5680];
 
@@ -170,6 +170,192 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
             return result;
         }
+
+        #region HotbarRecast
+
+        public unsafe List<HotbarRecastV1> GetHotbarRecastV1()
+        {
+            List<HotbarRecastV1> result = new List<HotbarRecastV1>();
+            if (Pointers[PointerType.Hotbar].Address == IntPtr.Zero || Pointers[PointerType.Recast].Address == IntPtr.Zero)
+            {
+                return result;
+            }
+
+            try
+            {
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_1));
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_2));
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_3));
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_4));
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_5));
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_6));
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_7));
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_8));
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_9));
+                result.AddRange(GetRecastListByHotbar(HotbarType.HOTBAR_10));
+                result.AddRange(GetRecastListByHotbar(HotbarType.X_HOTBAR_1));
+                result.AddRange(GetRecastListByHotbar(HotbarType.X_HOTBAR_2));
+                result.AddRange(GetRecastListByHotbar(HotbarType.X_HOTBAR_3));
+                result.AddRange(GetRecastListByHotbar(HotbarType.X_HOTBAR_4));
+                result.AddRange(GetRecastListByHotbar(HotbarType.X_HOTBAR_5));
+                result.AddRange(GetRecastListByHotbar(HotbarType.X_HOTBAR_6));
+                result.AddRange(GetRecastListByHotbar(HotbarType.X_HOTBAR_7));
+                result.AddRange(GetRecastListByHotbar(HotbarType.X_HOTBAR_8));
+                result.AddRange(GetRecastListByHotbar(HotbarType.PETBAR));
+                result.AddRange(GetRecastListByHotbar(HotbarType.X_PETBAR));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+
+            return result;
+
+        }
+
+        public unsafe List<HotbarRecastV1> GetRecastListByHotbar(HotbarType hotbarType)
+        {
+            List<HotbarRecastV1> result = new List<HotbarRecastV1>();
+            if (Pointers[PointerType.Hotbar].Address == IntPtr.Zero ||
+                Pointers[PointerType.Recast].Address == IntPtr.Zero)
+            {
+                return result;
+            }
+
+
+            try
+            {
+
+                // set hotbar slot count
+                int nItems;
+                bool canUseKeyBinds;
+                switch (hotbarType)
+                {
+                    case HotbarType.X_HOTBAR_1:
+                    case HotbarType.X_HOTBAR_2:
+                    case HotbarType.X_HOTBAR_3:
+                    case HotbarType.X_HOTBAR_4:
+                    case HotbarType.X_HOTBAR_5:
+                    case HotbarType.X_HOTBAR_6:
+                    case HotbarType.X_HOTBAR_7:
+                    case HotbarType.X_HOTBAR_8:
+                    case HotbarType.X_PETBAR:
+                        nItems = 16;
+                        canUseKeyBinds = false;
+                        break;
+                    default:
+                        nItems = 12;
+                        canUseKeyBinds = true;
+                        break;
+                }
+
+                // set address and area for hotbar
+                var hotbarItemSize = 0xD8; // 216L
+                var hotbarMemoryAreaSize = hotbarItemSize * 16;
+                var hotbarAddress = IntPtr.Add(Pointers[PointerType.Hotbar].Address, hotbarMemoryAreaSize * (int)hotbarType);
+
+                // set address and area for recast
+                var recastItemSize = 0x28; // 40L
+                var recastMemoryAreaSize = recastItemSize * 16;
+                var recastAddress = IntPtr.Add(Pointers[PointerType.Recast].Address, recastMemoryAreaSize * (int)hotbarType);
+
+                // get memory bytes
+                var hotbarMemoryAreaBytes = GetByteArray(hotbarAddress, hotbarMemoryAreaSize);
+                var recastMemoryAreaBytes = GetByteArray(recastAddress, recastMemoryAreaSize);
+
+                for (var i = 0; i < nItems; i++)
+                {
+                    try
+                    {
+                        var hotbarItemBytes = new byte[hotbarItemSize];
+                        var recastItemBytes = new byte[recastItemSize];
+
+                        // copy an item from memory area bytes
+                        Buffer.BlockCopy(hotbarMemoryAreaBytes, hotbarItemSize * i, hotbarItemBytes, 0, hotbarItemSize);
+                        Buffer.BlockCopy(recastMemoryAreaBytes, recastItemSize * i, recastItemBytes, 0, recastItemSize);
+
+                        // get hotbaritem values
+                        var name = GetStringFromBytes(hotbarItemBytes, 0, 80);
+                        var keyBinds = GetStringFromBytes(hotbarItemBytes, 103, 40);
+                        var id = BitConverter.ToInt16(hotbarItemBytes, 150);
+
+                        // if name is not set, this slot is empty.
+                        if (string.IsNullOrWhiteSpace(name))
+                        {
+                            continue;
+                        }
+
+                        // if keybinds set, remove keybinds string from name
+                        if (canUseKeyBinds && !String.IsNullOrWhiteSpace(keyBinds))
+                        {
+                            name = name.Replace($" {keyBinds}", "");
+                        }
+
+                        // get recastitem values
+                        var category = BitConverter.ToInt32(recastItemBytes, 0);
+                        var type = BitConverter.ToInt32(recastItemBytes, 8);
+                        var recastId = BitConverter.ToInt32(recastItemBytes, 12); // same as hotbar itemid? but not used.
+                        var icon = BitConverter.ToInt32(recastItemBytes, 16);
+                        var coolDownPercent = BitConverter.ToInt32(recastItemBytes, 20);
+                        var isAvailable = BitConverter.ToBoolean(recastItemBytes, 24);
+                        var remainingorcost = BitConverter.ToInt32(recastItemBytes, 28);
+                        remainingorcost = remainingorcost < 0 ? 0 : remainingorcost; // if minus, set 0.
+                        var amount = BitConverter.ToInt32(recastItemBytes, 32);
+                        var inRange = BitConverter.ToBoolean(recastItemBytes, 36);
+                        var isProcOrcombo = recastItemBytes[21] > 0;
+
+                        /**
+                         * remainingorcost means "Remaining OR Cost"
+                         * lower left value of icon.
+                         * if CoolingDown, this is Remaining Time, or not this is Cost.
+                         * 
+                         **/
+
+
+                        // TYPE filter 
+                        //   type:0  is system
+                        //   type:1  is skill/magic
+                        //   type:2  is item
+                        //   type:<0 is error
+                        if (type == 2 || type < 0)
+                        {
+                            continue;
+                        }
+
+                        result.Add(new HotbarRecastV1
+                        {
+                            HotbarType = hotbarType,
+                            Slot = i,
+                            ID = id,
+                            Name = name,
+
+                            Category = category,
+                            Type = type,
+                            Icon = icon,
+                            CoolDownPercent = coolDownPercent,
+                            IsAvailable = isAvailable,
+                            RemainingOrCost = remainingorcost,
+                            Amount = amount,
+                            InRange = inRange,
+                            IsProcOrCombo = isProcOrcombo,
+                        });
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            return result;
+        }
+
+        #endregion 
 
     }
 }
