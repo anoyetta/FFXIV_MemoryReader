@@ -74,9 +74,9 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 combatant.PosY = *(Single*)&p[offset + 8];
                 combatant.Heading = *(Single*)&p[offset + 16];
 
-                combatant.TargetID = *(uint*)&p[5680];
+                combatant.TargetID = *(uint*)&p[5744];
 
-                offset = 5808;
+                offset = 5880;
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
                 {
                     combatant.CurrentHP = *(int*)&p[offset + 8];
@@ -85,12 +85,12 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     combatant.MaxMP = *(int*)&p[offset + 20];
                     combatant.CurrentTP = *(short*)&p[offset + 24];
                     combatant.MaxTP = 1000;
-                    combatant.Job = p[offset + 62];
-                    combatant.Level = p[offset + 64];
+                    combatant.Job = p[offset + 64];
+                    combatant.Level = p[offset + 66];
 
                     // Status aka Buff,Debuff
                     combatant.Statuses = new List<StatusV1>();
-                    const int StatusEffectOffset = 5992;
+                    const int StatusEffectOffset = 6072;
                     const int statusSize = 12;
 
                     int statusCountLimit = 60;
@@ -120,10 +120,10 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     // Cast
                     combatant.Casting = new CastV1
                     {
-                        ID = *(short*)&p[6372],
-                        TargetID = *(uint*)&p[6384],
-                        Progress = *(Single*)&p[6420],
-                        Time = *(Single*)&p[6424],
+                        ID = *(short*)&p[6452],
+                        TargetID = *(uint*)&p[6464],
+                        Progress = *(Single*)&p[6500],
+                        Time = *(Single*)&p[6504],
                     };
                 }
                 else
