@@ -74,9 +74,9 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 combatant.PosY = *(Single*)&p[offset + 8];
                 combatant.Heading = *(Single*)&p[offset + 16];
 
-                combatant.TargetID = *(uint*)&p[5744];
+                combatant.TargetID = *(uint*)&p[5832];
 
-                offset = 5880;
+                offset = 5960;
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
                 {
                     combatant.CurrentHP = *(int*)&p[offset + 8];
@@ -90,7 +90,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
                     // Status aka Buff,Debuff
                     combatant.Statuses = new List<StatusV1>();
-                    const int StatusEffectOffset = 6072;
+                    const int StatusEffectOffset = 6152;
                     const int statusSize = 12;
 
                     int statusCountLimit = 60;
@@ -120,10 +120,10 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     // Cast
                     combatant.Casting = new CastV1
                     {
-                        ID = *(short*)&p[6452],
-                        TargetID = *(uint*)&p[6464],
-                        Progress = *(Single*)&p[6500],
-                        Time = *(Single*)&p[6504],
+                        ID = *(short*)&p[6900],
+                        TargetID = *(uint*)&p[6912],
+                        Progress = *(Single*)&p[6948],
+                        Time = *(Single*)&p[6952],
                     };
                 }
                 else
@@ -152,12 +152,12 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
             try
             {
-                byte[] source = GetByteArray(Pointers[PointerType.CameraInfo].Address, 512);
+                byte[] source = GetByteArray(Pointers[PointerType.CameraInfo].Address, 1024);
                 if (source == null || source.Length == 0) { return result; }
 
                 fixed (byte* p = source)
                 {
-                    int offset = 0x120;
+                    int offset = 16*46;
                     result.Mode = p[offset];
                     result.Heading = *(Single*)&p[offset + 36];
                     result.Elevation = *(Single*)&p[offset + 40];
