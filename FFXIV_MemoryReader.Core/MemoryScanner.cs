@@ -46,7 +46,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 PointerType.Hotbar,
                 new Pointer
                 {
-                    Signature = "F783843E??000000",
+                    Signature = "9C640000000000002C2C000000000000",
                     PointerPath = new long[6] {56, 48, 40, 32, 0, 0},
                     Architecture = Architecture.x64,
                 }
@@ -55,7 +55,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 PointerType.Recast,
                 new Pointer
                 {
-                    Signature = "F783843E??000000",
+                    Signature = "9C640000000000002C2C000000000000",
                     PointerPath = new long[5] {56, 24, 48, 32, 60},
                     Architecture = Architecture.x64,
                 }
