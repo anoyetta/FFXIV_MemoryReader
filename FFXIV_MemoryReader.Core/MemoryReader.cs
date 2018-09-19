@@ -256,7 +256,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 var hotbarAddress = IntPtr.Add(Pointers[PointerType.Hotbar].Address, hotbarMemoryAreaSize * (int)hotbarType);
 
                 // set address and area for recast
-                var recastItemSize = 0x28; // 40L
+                var recastItemSize = 0x2C; // 44L
                 var recastMemoryAreaSize = recastItemSize * 16;
                 var recastAddress = IntPtr.Add(Pointers[PointerType.Recast].Address, recastMemoryAreaSize * (int)hotbarType);
 
