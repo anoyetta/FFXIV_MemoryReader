@@ -157,10 +157,9 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
                 fixed (byte* p = source)
                 {
-                    int offset = 16*46;
-                    result.Mode = p[offset];
-                    result.Heading = *(Single*)&p[offset + 36];
-                    result.Elevation = *(Single*)&p[offset + 40];
+                    result.Mode = p[0x174];
+                    result.Heading = *(Single*)&p[0x134];
+                    result.Elevation = *(Single*)&p[0x138];
                 }
             }
             catch (Exception ex)

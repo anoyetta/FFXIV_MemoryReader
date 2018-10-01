@@ -37,7 +37,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 PointerType.CameraInfo,
                 new Pointer
                 {
-                    Signature = "10000000788301000000000000000000????????0000000081000000FFFFFFFF",
+                    Signature = "10000000788301000000000000000000??????0000000000FFFFFFFF00000000",
                     PointerPath = new long[0],
                     Architecture = Architecture.x64,
                 }
