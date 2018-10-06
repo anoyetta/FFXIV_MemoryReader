@@ -30,10 +30,6 @@
         {
             this.Button_GetCombatants = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CharacterName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EffectiveDistance = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Heading = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Button_CameraInfo = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -60,6 +56,11 @@
             this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.InRange = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.IsProc = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CharacterName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EffectiveDistance = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Heading = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Target = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -89,36 +90,13 @@
             this.ID,
             this.CharacterName,
             this.EffectiveDistance,
-            this.Heading});
+            this.Heading,
+            this.Target});
             this.dataGridView1.Location = new System.Drawing.Point(6, 35);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 21;
             this.dataGridView1.Size = new System.Drawing.Size(448, 303);
             this.dataGridView1.TabIndex = 1;
-            // 
-            // ID
-            // 
-            this.ID.HeaderText = "ID";
-            this.ID.Name = "ID";
-            this.ID.ReadOnly = true;
-            // 
-            // CharacterName
-            // 
-            this.CharacterName.HeaderText = "Name";
-            this.CharacterName.Name = "CharacterName";
-            this.CharacterName.ReadOnly = true;
-            // 
-            // EffectiveDistance
-            // 
-            this.EffectiveDistance.HeaderText = "EffectiveDistance";
-            this.EffectiveDistance.Name = "EffectiveDistance";
-            this.EffectiveDistance.ReadOnly = true;
-            // 
-            // Heading
-            // 
-            this.Heading.HeaderText = "Heading";
-            this.Heading.Name = "Heading";
-            this.Heading.ReadOnly = true;
             // 
             // Button_CameraInfo
             // 
@@ -351,6 +329,36 @@
             this.IsProc.Name = "IsProc";
             this.IsProc.ReadOnly = true;
             // 
+            // ID
+            // 
+            this.ID.HeaderText = "ID";
+            this.ID.Name = "ID";
+            this.ID.ReadOnly = true;
+            // 
+            // CharacterName
+            // 
+            this.CharacterName.HeaderText = "Name";
+            this.CharacterName.Name = "CharacterName";
+            this.CharacterName.ReadOnly = true;
+            // 
+            // EffectiveDistance
+            // 
+            this.EffectiveDistance.HeaderText = "EffectiveDistance";
+            this.EffectiveDistance.Name = "EffectiveDistance";
+            this.EffectiveDistance.ReadOnly = true;
+            // 
+            // Heading
+            // 
+            this.Heading.HeaderText = "Heading";
+            this.Heading.Name = "Heading";
+            this.Heading.ReadOnly = true;
+            // 
+            // Target
+            // 
+            this.Target.HeaderText = "Target";
+            this.Target.Name = "Target";
+            this.Target.ReadOnly = true;
+            // 
             // UserControl1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -373,10 +381,6 @@
 
         private System.Windows.Forms.Button Button_GetCombatants;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CharacterName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EffectiveDistance;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Heading;
         private System.Windows.Forms.Button Button_CameraInfo;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
@@ -403,5 +407,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Amount;
         private System.Windows.Forms.DataGridViewTextBoxColumn InRange;
         private System.Windows.Forms.DataGridViewTextBoxColumn IsProc;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CharacterName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EffectiveDistance;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Heading;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Target;
     }
 }
