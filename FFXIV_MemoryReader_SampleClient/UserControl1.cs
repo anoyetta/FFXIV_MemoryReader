@@ -57,7 +57,7 @@ namespace FFXIV_MemoryReader_SampleClient
                 {
                     foreach (var combatant in combatants)
                     {
-                        this.dataGridView1.Rows.Add(new string[] { combatant.ID.ToString(), combatant.Name, combatant.EffectiveDistance.ToString(), combatant.Heading.ToString() });
+                        this.dataGridView1.Rows.Add(new string[] { combatant.ID.ToString(), combatant.Name, combatant.EffectiveDistance.ToString(), combatant.Heading.ToString(), combatant.TargetID.ToString() });
                     }
                 }
             }

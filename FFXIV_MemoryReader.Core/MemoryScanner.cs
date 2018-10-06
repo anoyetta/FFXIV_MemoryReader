@@ -16,6 +16,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
         enum PointerType
         {
+            Target,
             MobArray,
             CameraInfo,
             Hotbar,
@@ -24,6 +25,15 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
         Dictionary<PointerType, Pointer> Pointers = new Dictionary<PointerType, Pointer>
         {
+            {
+                PointerType.Target,
+                new Pointer
+                {
+                    Signature = "41bc000000e041bd01000000493bc47555488d0d",
+                    PointerPath = new long[1] { 192 },
+                    Architecture = Architecture.x64_RIP_relative,
+                }
+            },
             {
                 PointerType.MobArray,
                 new Pointer
