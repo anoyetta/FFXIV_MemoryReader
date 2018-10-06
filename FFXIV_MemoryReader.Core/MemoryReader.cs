@@ -31,7 +31,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     if (!(p == IntPtr.Zero))
                     {
                         byte[] c = GetByteArray(p, combatantDataSize);
-                        CombatantV1 combatant = GetCombatantFromByteArray(c);
+                        CombatantV1 combatant = GetCombatantFromByteArray(c, i);
                         if (combatant.type != ObjectType.PC && combatant.type != ObjectType.Monster)
                         {
                             continue;
@@ -52,7 +52,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             return result;
         }
 
-        public unsafe CombatantV1 GetCombatantFromByteArray(byte[] source)
+        public unsafe CombatantV1 GetCombatantFromByteArray(byte[] source, int combatantsListNumber)
         {
             int offset = 0;
             CombatantV1 combatant = new CombatantV1();
@@ -74,7 +74,36 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 combatant.PosY = *(Single*)&p[offset + 8];
                 combatant.Heading = *(Single*)&p[offset + 16];
 
-                combatant.TargetID = *(uint*)&p[5832];
+                /*
+                 * combatantsListNumber == 0 の場合、すなわち自分自身のとき
+                 * TargetID が取れないので、Targetのシグネチャから直接探して置き換える。
+                 * 
+                 */
+                if (combatantsListNumber == 0)
+                {
+                    CombatantV1 currentTargetCombatant = null;
+                    IntPtr currentTargetCombatantAddress = IntPtr.Zero;
+                    byte[] currentTargetCombatantAddressSource = GetByteArray(Pointers[PointerType.Target].Address, 128);
+                    unsafe
+                    {
+                        fixed (byte* p2 = currentTargetCombatantAddressSource) currentTargetCombatantAddress = new IntPtr(*(Int64*)p2);
+                    }
+                    if (currentTargetCombatantAddress.ToInt64() <= 0)
+                    {
+                        combatant.TargetID = 0;
+                    }
+                    byte[] currentTargetCombatantSource = GetByteArray(currentTargetCombatantAddress, combatantDataSize);
+                    currentTargetCombatant = GetCombatantFromByteArray(currentTargetCombatantSource, -1);
+                    combatant.TargetID = currentTargetCombatant.ID;
+                }
+                else
+                {
+                    combatant.TargetID = *(uint*)&p[5832];
+                    if(combatant.TargetID == 3758096384)
+                    {
+                        combatant.TargetID = 0;
+                    }
+                }
 
                 offset = 5960;
                 if (combatant.type == ObjectType.PC || combatant.type == ObjectType.Monster)
