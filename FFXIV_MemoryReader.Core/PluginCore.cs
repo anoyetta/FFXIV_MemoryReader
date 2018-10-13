@@ -20,6 +20,9 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         MainControl mainControl = null;
         Memory memory;
         System.Timers.Timer processChecker;
+        const double processCheckerInterval = 500;
+        const double signatureCheckerInterval = 2000;
+        private double signatureCheckTimer = 0;
         private object _lock = new object();
 
         public PluginCore()
@@ -29,7 +32,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             Logger.Info("PluginCore Constructor Called.");
             processChecker = new System.Timers.Timer();
             processChecker.Elapsed += ProessChecker_Elapsed;
-            processChecker.Interval = 500;
+            processChecker.Interval = processCheckerInterval;
             Logger.Info("PluginCore Constructor End.");
         }
 
@@ -83,7 +86,19 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         }
         private void ProessChecker_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            CheckProcessId();
+            lock (_lock)
+            {
+                CheckProcessId();
+                if (signatureCheckTimer >= signatureCheckerInterval)
+                {
+                    signatureCheckTimer = 0;
+                    CheckSignatures();
+                }
+                else
+                {
+                    signatureCheckTimer += processCheckerInterval;
+                }
+            }
         }
 
         internal void CheckProcessId()
@@ -102,30 +117,35 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
         internal void ChangeProcessId(int processId = 0)
         {
-            lock (_lock)
-            {
-                Process process = Helper.ProcessHelper.GetFFXIVProcess(processId);
+            Process process = Helper.ProcessHelper.GetFFXIVProcess(processId);
 
-                if ((process != null && memory == null) ||
-                    (process != null && memory != null && process.Id != memory.Process.Id))
+            if ((process != null && memory == null) ||
+                (process != null && memory != null && process.Id != memory.Process.Id))
+            {
+                try
                 {
-                    try
-                    {
-                        Logger.Info("FFXIV Process Found: {0}", process.Id);
-                        memory = new Memory(process, Logger);
-                    }
-                    catch
-                    {
-                        memory = null;
-                    }
+                    Logger.Info("FFXIV Process Found: {0}", process.Id);
+                    memory = new Memory(process, Logger);
                 }
-                else if (process == null && memory != null)
+                catch
                 {
-                    memory?.Dispose();
                     memory = null;
                 }
             }
+            else if (process == null && memory != null)
+            {
+                memory?.Dispose();
+                memory = null;
+            }
+        }
 
+        private void CheckSignatures()
+        {
+            if (memory != null && memory.IsValid && !memory.HasAllPointers)
+            {
+                // Scan completed, but some signature not found
+                memory.ResolvePointers();
+            }
         }
 
 
@@ -134,7 +154,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             List<Model.CombatantV1> result = new List<Model.CombatantV1>();
             try
             {
-                if(memory != null && memory.IsValid)
+                if (memory != null && memory.IsValid)
                 {
                     result = memory.GetCombatantsV1();
                 }
@@ -169,7 +189,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             List<Model.HotbarRecastV1> result = new List<Model.HotbarRecastV1>();
             try
             {
-                if(memory != null && memory.IsValid)
+                if (memory != null && memory.IsValid)
                 {
                     result = memory.GetHotbarRecastV1();
                 }

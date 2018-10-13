@@ -82,10 +82,6 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
             ResolvePointers();
             IsMemoryScanningComplete = true;
-            foreach (var p in Pointers)
-            {
-                Logger.Info("{0} -> {1}", p.Key, p.Value.Address.ToInt64());
-            }
         }
 
         public void Dispose()
@@ -133,13 +129,21 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         }
 
 
-        private bool ResolvePointers()
+        internal bool ResolvePointers(bool force = false, bool verbose = false)
         {
             bool success = true;
 
             foreach (var p in Pointers)
             {
-                Logger.Info("Scannning Pointer {0} Start.", p.Key);
+                if (!force && p.Value.Address != IntPtr.Zero)
+                {
+                    continue;
+                }
+
+                if (verbose)
+                {
+                    Logger.Info("ResolvePointer: {0, 10}: Start.", p.Key);
+                }
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
 
@@ -177,7 +181,14 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     p.Value.Address = baseAddress;
                 }
                 stopWatch.Stop();
-                Logger.Info("Scannning Pointer {0} Finisend. Time= {1:#,0}ms", p.Key, stopWatch.ElapsedMilliseconds);
+                if (p.Value.Address != IntPtr.Zero)
+                {
+                    Logger.Info("ResolvePointer: {0, 10}: Found. ({1:#,4}ms) Address is {2}", p.Key, stopWatch.ElapsedMilliseconds, p.Value.Address.ToInt64());
+                }
+                if (verbose)
+                {
+                    Logger.Info("ResolvePointer: {0,10}: Finisend. ({1:#,4}ms)", p.Key, stopWatch.ElapsedMilliseconds);
+                }
             }
 
             return success;
