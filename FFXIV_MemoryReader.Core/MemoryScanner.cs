@@ -8,13 +8,11 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
     partial class Memory : IDisposable
     {
         NLog.Logger Logger;
-
-        private Process _process;
-        internal Process Process => _process;
+        internal Process Process { get; private set; }
 
         private bool IsMemoryScanningComplete = false;
 
-        enum PointerType
+        internal enum PointerType
         {
             Target,
             MobArray,
@@ -72,11 +70,22 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             }
         };
 
+        internal Dictionary<PointerType, IntPtr> GetPointers()
+        {
+            return new Dictionary<PointerType, IntPtr>
+            {
+                { PointerType.Target, Pointers[PointerType.Target].Address },
+                { PointerType.MobArray, Pointers[PointerType.MobArray].Address },
+                { PointerType.CameraInfo, Pointers[PointerType.CameraInfo].Address },
+                { PointerType.Hotbar, Pointers[PointerType.Hotbar].Address },
+                { PointerType.Recast, Pointers[PointerType.Recast].Address },
+            };
+        }
 
         public Memory(Process process, NLog.Logger logger)
         {
             Logger = logger;
-            _process = process;
+            Process = process;
 
             Logger.Info("MemoryReader Start.");
 
@@ -88,7 +97,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         {
             Logger.Info("MemoryReader Dispose Called.");
             Pointers = new Dictionary<PointerType, Pointer>();
-            _process = null;
+            Process = null;
             Logger.Info("MemoryReader Dispose Finished.");
         }
 
@@ -96,12 +105,12 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         public bool HasAllPointers => ValidatePointers();
         private bool ValidateProcess()
         {
-            if (_process == null)
+            if (Process == null)
             {
                 return false;
             }
 
-            if (_process.HasExited)
+            if (Process.HasExited)
             {
                 return false;
             }
@@ -183,11 +192,11 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 stopWatch.Stop();
                 if (p.Value.Address != IntPtr.Zero)
                 {
-                    Logger.Info("ResolvePointer: {0, 10}: Found. ({1:#,4}ms) Address is {2}", p.Key, stopWatch.ElapsedMilliseconds, p.Value.Address.ToInt64());
+                    Logger.Info("ResolvePointer: {0, 10}: Found. ({1, 4}ms) Address is {2}", p.Key, stopWatch.ElapsedMilliseconds, p.Value.Address.ToInt64());
                 }
                 if (verbose)
                 {
-                    Logger.Info("ResolvePointer: {0,10}: Finisend. ({1:#,4}ms)", p.Key, stopWatch.ElapsedMilliseconds);
+                    Logger.Info("ResolvePointer: {0,10}: Finisend. ({1, 4}ms)", p.Key, stopWatch.ElapsedMilliseconds);
                 }
             }
 
@@ -225,8 +234,8 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 }
             }
 
-            int moduleMemorySize = _process.MainModule.ModuleMemorySize;
-            IntPtr baseAddress = _process.MainModule.BaseAddress;
+            int moduleMemorySize = Process.MainModule.ModuleMemorySize;
+            IntPtr baseAddress = Process.MainModule.BaseAddress;
             IntPtr intPtr_EndOfModuleMemory = IntPtr.Add(baseAddress, moduleMemorySize);
             IntPtr intPtr_Scannning = baseAddress;
 
@@ -249,7 +258,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 IntPtr intPtr_NumberOfBytesRead = IntPtr.Zero;
 
                 // read memory
-                if (NativeMethods.ReadProcessMemory(_process.Handle, intPtr_Scannning, splitMemoryArray, nSize, ref intPtr_NumberOfBytesRead))
+                if (NativeMethods.ReadProcessMemory(Process.Handle, intPtr_Scannning, splitMemoryArray, nSize, ref intPtr_NumberOfBytesRead))
                 {
                     int num = 0;
 
@@ -324,7 +333,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         {
             IntPtr zero = IntPtr.Zero;
             IntPtr nSize = new IntPtr(buffer.Length);
-            return NativeMethods.ReadProcessMemory(_process.Handle, address, buffer, nSize, ref zero);
+            return NativeMethods.ReadProcessMemory(Process.Handle, address, buffer, nSize, ref zero);
         }
 
         private static string GetStringFromBytes(byte[] source, int offset = 0, int size = 256)

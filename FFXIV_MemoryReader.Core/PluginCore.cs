@@ -3,7 +3,9 @@ using NLog.Config;
 using NLog.Targets;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
@@ -18,6 +20,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         Label label;
         ElementHost elementHost;
         MainControl mainControl = null;
+        MainControlViewModel viewModel = null;
         Memory memory;
         System.Timers.Timer processChecker;
         const double processCheckerInterval = 500;
@@ -77,7 +80,15 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
             Logger.Info("Creating Plugin Screen.");
             mainControl = new MainControl();
-            tabPage.Controls.Add(elementHost = new ElementHost() { Child = mainControl, Dock = DockStyle.Fill });
+            viewModel = new MainControlViewModel();
+            viewModel.InitPointerValues();
+            mainControl.DataContext = viewModel;
+
+            tabPage.Controls.Add(elementHost = new ElementHost()
+            {
+                Child = mainControl,
+                Dock = DockStyle.Fill
+            });
 
             Logger.Info("ProcessChecker Timer Start.");
             processChecker.Start();
@@ -110,6 +121,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             else if (!memory.IsValid)
             {
                 Logger.Error("FFXIV Process Lost.");
+                viewModel.InitPointerValues();
                 memory?.Dispose();
                 memory = null;
             }
@@ -125,6 +137,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 try
                 {
                     Logger.Info("FFXIV Process Found: {0}", process.Id);
+                    viewModel.InitPointerValues();
                     memory = new Memory(process, Logger);
                 }
                 catch
@@ -134,6 +147,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             }
             else if (process == null && memory != null)
             {
+                viewModel.InitPointerValues();
                 memory?.Dispose();
                 memory = null;
             }
@@ -145,6 +159,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             {
                 // Scan completed, but some signature not found
                 memory.ResolvePointers();
+                viewModel.SetPointerValues(memory.GetPointers());
             }
         }
 
@@ -201,6 +216,71 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             return result;
         }
 
+    }
+
+    internal class MainControlViewModel : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void SetProperty<T>(ref T field, T value, [CallerMemberName]string propertyName = null)
+        {
+            field = value;
+            var h = this.PropertyChanged;
+            if (h != null) { h(this, new PropertyChangedEventArgs(propertyName)); }
+        }
+
+        internal void InitPointerValues()
+        {
+            this.PointerValue_Target = "0";
+            this.PointerValue_MobArray = "0";
+            this.PointerValue_CameraInfo = "0";
+            this.pointerValue_Hotbar = "0";
+            this.PointerValue_Recast = "0";
+
+        }
+
+        internal void SetPointerValues(Dictionary<Memory.PointerType, IntPtr> pointers)
+        {
+            this.PointerValue_Target = pointers[Memory.PointerType.Target].ToString();
+            this.PointerValue_MobArray = pointers[Memory.PointerType.MobArray].ToString();
+            this.PointerValue_CameraInfo = pointers[Memory.PointerType.CameraInfo].ToString();
+            this.pointerValue_Hotbar = pointers[Memory.PointerType.Hotbar].ToString();
+            this.PointerValue_Recast = pointers[Memory.PointerType.Recast].ToString();
+        }
+
+        private string pointerValue_Target;
+        public string PointerValue_Target
+        {
+            get { return this.pointerValue_Target; }
+            set { this.SetProperty(ref this.pointerValue_Target, value); }
+        }
+
+        private string pointerValue_MobArray;
+        public string PointerValue_MobArray
+        {
+            get { return this.pointerValue_MobArray; }
+            set { this.SetProperty(ref this.pointerValue_MobArray, value); }
+        }
+
+        private string pointerValue_CameraInfo;
+        public string PointerValue_CameraInfo
+        {
+            get { return this.pointerValue_CameraInfo; }
+            set { this.SetProperty(ref this.pointerValue_CameraInfo, value); }
+        }
+
+        private string pointerValue_Hotbar;
+        public string PointerValue_Hotbar
+        {
+            get { return this.pointerValue_Hotbar; }
+            set { this.SetProperty(ref this.pointerValue_Hotbar, value); }
+        }
+
+        private string pointerValue_Recast;
+        public string PointerValue_Recast
+        {
+            get { return this.pointerValue_Recast; }
+            set { this.SetProperty(ref this.pointerValue_Recast, value); }
+        }
     }
 
 }
