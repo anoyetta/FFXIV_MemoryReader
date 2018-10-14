@@ -243,11 +243,11 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
         internal void SetPointerValues(Dictionary<Memory.PointerType, IntPtr> pointers)
         {
-            this.PointerValue_Target = pointers[Memory.PointerType.Target].ToString();
-            this.PointerValue_MobArray = pointers[Memory.PointerType.MobArray].ToString();
-            this.PointerValue_CameraInfo = pointers[Memory.PointerType.CameraInfo].ToString();
-            this.PointerValue_Hotbar = pointers[Memory.PointerType.Hotbar].ToString();
-            this.PointerValue_Recast = pointers[Memory.PointerType.Recast].ToString();
+            this.PointerValue_Target = pointers[Memory.PointerType.Target].ToInt64().ToString();
+            this.PointerValue_MobArray = pointers[Memory.PointerType.MobArray].ToInt64().ToString();
+            this.PointerValue_CameraInfo = pointers[Memory.PointerType.CameraInfo].ToInt64().ToString();
+            this.PointerValue_Hotbar = pointers[Memory.PointerType.Hotbar].ToInt64().ToString();
+            this.PointerValue_Recast = pointers[Memory.PointerType.Recast].ToInt64().ToString();
         }
 
         private string pointerValue_Target;
