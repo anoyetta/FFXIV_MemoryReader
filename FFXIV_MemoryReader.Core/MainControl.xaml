@@ -43,11 +43,11 @@
                 <Label Content="CameraInfo" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="2" Height="20" Width="77" Margin="0,0,10,0" Grid.Row="2" HorizontalContentAlignment="Right"/>
                 <Label Content="Hotbar" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="2" Height="20" Width="77" Margin="0,0,10,0" Grid.Row="3" HorizontalContentAlignment="Right"/>
                 <Label Content="Recast" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="2" Height="20" Width="77" Margin="0,0,10,0" Grid.Row="4" HorizontalContentAlignment="Right"/>
-                <Label Content="{Binding PointerValue_Target}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="77" Margin="10,0,0,0" Grid.Column="1"/>
-                <Label Content="{Binding PointerValue_MobArray}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="77" Margin="10,0,0,0" Grid.Column="1" Grid.Row="1"/>
-                <Label Content="{Binding PointerValue_CameraInfo}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="77" Margin="10,0,0,0" Grid.Column="1" Grid.Row="2"/>
-                <Label Content="{Binding PointerValue_Hotbar}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="77" Margin="10,0,0,0" Grid.Column="1" Grid.Row="3"/>
-                <Label Content="{Binding PointerValue_Recast}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="77" Margin="10,0,0,0" Grid.Column="1" Grid.Row="4"/>
+                <Label Content="{Binding PointerValue_Target}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="190" Margin="10,0,0,0" Grid.Column="1"/>
+                <Label Content="{Binding PointerValue_MobArray}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="190" Margin="10,0,0,0" Grid.Column="1" Grid.Row="1"/>
+                <Label Content="{Binding PointerValue_CameraInfo}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="190" Margin="10,0,0,0" Grid.Column="1" Grid.Row="2"/>
+                <Label Content="{Binding PointerValue_Hotbar}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="190" Margin="10,0,0,0" Grid.Column="1" Grid.Row="3"/>
+                <Label Content="{Binding PointerValue_Recast}" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="2" Height="20" Width="190" Margin="10,0,0,0" Grid.Column="1" Grid.Row="4"/>
             </Grid>
         </Grid>
         <TextBlock Margin="5,28,0,0" TextWrapping="Wrap" HorizontalAlignment="Left" Width="169" Height="21" VerticalAlignment="Top" FontSize="14"><Hyperlink NavigateUri="https://github.com/TamanegiMage/FFXIV_MemoryReader"><Run Text="GitHub Project Page"/></Hyperlink></TextBlock>
