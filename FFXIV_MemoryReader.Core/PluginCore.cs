@@ -155,10 +155,13 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
 
         private void CheckSignatures()
         {
-            if (memory != null && memory.IsValid && !memory.HasAllPointers)
+            if (memory != null && memory.IsValid)
             {
-                // Scan completed, but some signature not found
-                memory.ResolvePointers();
+                if(!memory.HasAllPointers)
+                {
+                    // Scan completed, but some signature not found
+                    memory.ResolvePointers();
+                }
                 viewModel.SetPointerValues(memory.GetPointers());
             }
         }
@@ -243,7 +246,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             this.PointerValue_Target = pointers[Memory.PointerType.Target].ToString();
             this.PointerValue_MobArray = pointers[Memory.PointerType.MobArray].ToString();
             this.PointerValue_CameraInfo = pointers[Memory.PointerType.CameraInfo].ToString();
-            this.pointerValue_Hotbar = pointers[Memory.PointerType.Hotbar].ToString();
+            this.PointerValue_Hotbar = pointers[Memory.PointerType.Hotbar].ToString();
             this.PointerValue_Recast = pointers[Memory.PointerType.Recast].ToString();
         }
 
