@@ -208,11 +208,19 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     p.Value.Address = baseAddress;
                     if (p.Value.Address != IntPtr.Zero)
                     {
-                        Logger.Info("ResolvePointer: {0, 10}: Found. ({1, 4}ms) Address is {2}", p.Key, stopWatch.ElapsedMilliseconds, p.Value.Address.ToInt64());
+                        if (currentAddress == IntPtr.Zero)
+                        {
+                            Logger.Info("ResolvePointer: {0, 10}: Found.   ({1, 3}ms) Address is {2}", p.Key, stopWatch.ElapsedMilliseconds, p.Value.Address.ToInt64());
+
+                        }
+                        else
+                        {
+                            Logger.Info("ResolvePointer: {0, 10}: Changed. ({1, 3}ms) Address is {2}", p.Key, stopWatch.ElapsedMilliseconds, p.Value.Address.ToInt64());
+                        }
                     }
                     if (verbose)
                     {
-                        Logger.Info("ResolvePointer: {0,10}: Finisend. ({1, 4}ms)", p.Key, stopWatch.ElapsedMilliseconds);
+                        Logger.Info("ResolvePointer: {0,10}: Finish.  ({1, 3}ms)", p.Key, stopWatch.ElapsedMilliseconds);
                     }
                 }
             }
