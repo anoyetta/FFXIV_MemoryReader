@@ -66,6 +66,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                     Signature = "9C640000000000002C2C000000000000",
                     PointerPath = new long[5] {56, 24, 48, 32, 60},
                     Architecture = Architecture.x64,
+                    RequirePeriodicScan = true,
                 }
             }
         };
@@ -138,15 +139,28 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         }
 
 
-        internal bool ResolvePointers(bool force = false, bool verbose = false)
+        internal bool ResolvePointers(bool force = false, bool periodicScan = false, bool verbose = false)
         {
             bool success = true;
 
             foreach (var p in Pointers)
             {
-                if (!force && p.Value.Address != IntPtr.Zero)
+                if (!force)
                 {
-                    continue;
+                    if (periodicScan)
+                    {
+                        if(!p.Value.RequirePeriodicScan || p.Value.Address == IntPtr.Zero)
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (p.Value.Address != IntPtr.Zero)
+                        {
+                            continue;
+                        }
+                    }
                 }
 
                 if (verbose)
@@ -155,12 +169,11 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 }
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
-
+                var currentAddress = p.Value.Address;
                 var baseAddress = SearchLocations(p.Value.Signature, p.Value.Architecture).FirstOrDefault();
                 if (baseAddress == IntPtr.Zero)
                 {
                     success = false;
-                    p.Value.Address = baseAddress;
                 }
                 else
                 {
@@ -187,16 +200,20 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                                 break;
                         }
                     }
-                    p.Value.Address = baseAddress;
                 }
                 stopWatch.Stop();
-                if (p.Value.Address != IntPtr.Zero)
+
+                if (currentAddress.ToInt64() != baseAddress.ToInt64())
                 {
-                    Logger.Info("ResolvePointer: {0, 10}: Found. ({1, 4}ms) Address is {2}", p.Key, stopWatch.ElapsedMilliseconds, p.Value.Address.ToInt64());
-                }
-                if (verbose)
-                {
-                    Logger.Info("ResolvePointer: {0,10}: Finisend. ({1, 4}ms)", p.Key, stopWatch.ElapsedMilliseconds);
+                    p.Value.Address = baseAddress;
+                    if (p.Value.Address != IntPtr.Zero)
+                    {
+                        Logger.Info("ResolvePointer: {0, 10}: Found. ({1, 4}ms) Address is {2}", p.Key, stopWatch.ElapsedMilliseconds, p.Value.Address.ToInt64());
+                    }
+                    if (verbose)
+                    {
+                        Logger.Info("ResolvePointer: {0,10}: Finisend. ({1, 4}ms)", p.Key, stopWatch.ElapsedMilliseconds);
+                    }
                 }
             }
 

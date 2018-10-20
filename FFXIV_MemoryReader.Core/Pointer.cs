@@ -8,6 +8,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         public IntPtr Address { get; set; } = IntPtr.Zero;
         public long[] PointerPath { get; set; }
         public Architecture Architecture { get; set; }
+        public bool RequirePeriodicScan { get; set; } = false;
     }
 
     enum Architecture
