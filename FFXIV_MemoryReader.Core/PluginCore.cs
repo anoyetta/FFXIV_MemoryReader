@@ -25,7 +25,9 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
         System.Timers.Timer processChecker;
         const double processCheckerInterval = 500;
         const double signatureCheckerInterval = 2000;
+        const double periodicScanInterval = 15000;
         private double signatureCheckTimer = 0;
+        private double periodicScanTimer = 0;
         private object _lock = new object();
 
         public PluginCore()
@@ -100,6 +102,7 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             lock (_lock)
             {
                 CheckProcessId();
+
                 if (signatureCheckTimer >= signatureCheckerInterval)
                 {
                     signatureCheckTimer = 0;
@@ -109,6 +112,17 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
                 {
                     signatureCheckTimer += processCheckerInterval;
                 }
+
+                if (periodicScanTimer >= periodicScanInterval)
+                {
+                    periodicScanTimer = 0;
+                    RunPeriodicScan();
+                }
+                else
+                {
+                    periodicScanTimer += periodicScanInterval;
+                }
+
             }
         }
 
@@ -166,6 +180,14 @@ namespace TamanegiMage.FFXIV_MemoryReader.Core
             }
         }
 
+        private void RunPeriodicScan()
+        {
+            if (memory != null && memory.IsValid)
+            {
+                memory.ResolvePointers(false, true, false);
+                viewModel.SetPointerValues(memory.GetPointers());
+            }
+        }
 
         public List<Model.CombatantV1> GetCombatantsV1()
         {
